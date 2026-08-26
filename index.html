@@ -9,37 +9,49 @@
         .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         h1 { font-size: 1.5rem; text-align: center; color: #2c3e50; }
         .card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .cadastro { background-color: #e2e8f0; border-color: #cbd5e0; }
         .status { font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; display: inline-block; margin-bottom: 10px; }
         .status.em-uso { background-color: #fefcbf; color: #b7791f; }
         .status.livre { background-color: #c6f6d5; color: #22543d; }
         .btn { display: block; width: 100%; padding: 10px; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; margin-top: 10px; font-weight: bold; }
         .btn-blue { background-color: #3182ce; color: white; }
         .btn-green { background-color: #38a169; color: white; }
+        .btn-dark { background-color: #2d3748; color: white; }
         .info { font-size: 0.9rem; margin: 5px 0; color: #4a5568; }
+        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 1rem; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏗️ Controle TQS CON</h1>
+        <h1>🏗️ Controle de Arquivos TQS</h1>
         
-        <!-- Projeto em Uso (Seu Computador) -->
-        <div class="card">
-            <span class="status em-uso">Em uso no C:\TQS</span>
-            <h2 style="margin: 5px 0;">Edifício Alpha</h2>
-            <p class="info"><strong>Fase:</strong> Forma</p>
-            <p class="info"><strong>Versão Atual:</strong> R00</p>
-            <p class="info"><strong>Com:</strong> Marina</p>
-            <button class="btn btn-green" onclick="alert('Aqui abrirá a tela para você digitar a nova versão (ex: R01), as notas do que alterou e devolver para a rede!')">Devolver para TQS CON</button>
+        <!-- Área para Cadastrar Novo Projeto -->
+        <div class="card cadastro">
+            <h2 style="margin: 0 0 10px 0; font-size: 1.2rem;">➕ Novo Projeto</h2>
+            <input type="text" placeholder="Digite o nome do projeto..." id="nomeProjeto">
+            <button class="btn btn-dark" onclick="alert('Em breve, este botão vai salvar o projeto na sua planilha do Google e ele aparecerá na lista abaixo!')">Cadastrar Projeto</button>
         </div>
 
-        <!-- Projeto Livre (Na Rede) -->
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+
+        <!-- Exemplo de Projeto em Uso -->
         <div class="card">
-            <span class="status livre">Disponível na Rede</span>
-            <h2 style="margin: 5px 0;">Torre Gama</h2>
+            <span class="status em-uso">⚠️ Em uso no C:\TQS</span>
+            <h2 style="margin: 5px 0;">Residencial Parque das Flores</h2>
+            <p class="info"><strong>Fase:</strong> Forma</p>
+            <p class="info"><strong>Versão Atual:</strong> R01</p>
+            <p class="info"><strong>Com:</strong> Marina</p>
+            <button class="btn btn-green" onclick="alert('Aqui você vai avisar que copiou de volta pro TQS CON, informar a nova versão (ex: R02) e o que você alterou.')">Devolver para TQS CON</button>
+        </div>
+
+        <!-- Exemplo de Projeto Livre -->
+        <div class="card">
+            <span class="status livre">✅ Disponível no TQS CON</span>
+            <h2 style="margin: 5px 0;">Shopping Centro</h2>
             <p class="info"><strong>Fase:</strong> Armação</p>
-            <p class="info"><strong>Última Versão:</strong> R02</p>
-            <p class="info"><strong>Última Nota:</strong> Ajustes na viga de transição</p>
-            <button class="btn btn-blue" onclick="alert('Projeto bloqueado em seu nome! Pode começar a trabalhar no seu C:\\TQS.')">Fazer Check-out</button>
+            <p class="info"><strong>Última Versão:</strong> R00</p>
+            <p class="info"><strong>Última Nota:</strong> Projeto iniciado</p>
+            <button class="btn btn-blue" onclick="alert('Ao clicar aqui, o projeto ficará amarelo com o seu nome, avisando a todos que você está trabalhando nele no seu C:\\TQS.')">Pegar Projeto (Check-out)</button>
         </div>
     </div>
 </body>
