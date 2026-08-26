@@ -11,9 +11,8 @@
         .card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: white; }
         .cadastro { background-color: #e2e8f0; border-color: #cbd5e0; }
         
-        /* Estilos dos novos campos do formulário */
         label { font-weight: bold; font-size: 0.9rem; margin-top: 10px; display: block; color: #4a5568; }
-        input[type="text"] { width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 1rem; }
+        input[type="text"], select { width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 1rem; background-color: white; }
         
         .status { font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; display: inline-block; margin-bottom: 10px; }
         .status.em-uso { background-color: #fefcbf; color: #b7791f; }
@@ -29,15 +28,24 @@
     <div class="container">
         <h1>🏗️ Controle de Arquivos TQS</h1>
         
-        <!-- Formulário Completo -->
         <div class="card cadastro">
             <h2 style="margin: 0 0 10px 0; font-size: 1.2rem;">➕ Iniciar Novo Projeto</h2>
             
             <label>Nome do Projeto:</label>
             <input type="text" id="nomeProjeto" placeholder="Ex: Residencial Alphaville">
             
-            <label>Fase:</label>
-            <input type="text" id="faseProjeto" placeholder="Ex: Forma, Armação, Plantas...">
+            <label>Modelo Utilizado:</label>
+            <input type="text" id="modeloProjeto" placeholder="Ex: 1099-PANE-FOR-EX-R00">
+            
+            <label>Fase do Projeto:</label>
+            <select id="faseProjeto">
+                <option value="">Selecione a fase...</option>
+                <option value="EP - Estudo Preliminar">EP - Estudo Preliminar</option>
+                <option value="AP - Anteprojeto">AP - Anteprojeto</option>
+                <option value="PR - Pré-executivo">PR - Pré-executivo</option>
+                <option value="EX - Executivo">EX - Executivo</option>
+                <option value="LO - Liberado Obra">LO - Liberado Obra</option>
+            </select>
             
             <label>Versão:</label>
             <input type="text" id="versaoProjeto" placeholder="Ex: R00">
@@ -50,7 +58,6 @@
 
         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
 
-        <!-- Lista Dinâmica -->
         <div id="lista-projetos">
             <p id="carregando">⏳ Carregando projetos da rede...</p>
         </div>
@@ -80,6 +87,7 @@
                         <div class="card">
                             <span class="status ${classeStatus}">${iconeStatus} ${p.status}</span>
                             <h2 style="margin: 5px 0;">${p.projeto}</h2>
+                            <p class="info"><strong>Modelo:</strong> ${p.modelo || '-'}</p>
                             <p class="info"><strong>Fase:</strong> ${p.fase}</p>
                             <p class="info"><strong>Versão Atual:</strong> ${p.versao}</p>
                             <p class="info"><strong>Responsável:</strong> ${p.responsavel}</p>
@@ -91,32 +99,32 @@
 
         function cadastrarProjeto() {
             var nome = document.getElementById('nomeProjeto').value;
+            var modelo = document.getElementById('modeloProjeto').value;
             var fase = document.getElementById('faseProjeto').value;
             var versao = document.getElementById('versaoProjeto').value;
             var responsavel = document.getElementById('responsavelProjeto').value;
 
-            // Bloqueia se a pessoa esquecer de preencher o nome
-            if(nome.trim() === "") { 
-                alert("O Nome do Projeto é obrigatório."); 
+            if(nome.trim() === "" || fase === "") { 
+                alert("O Nome do Projeto e a Fase são obrigatórios!"); 
                 return; 
             }
             
             var btn = document.getElementById('btn-cadastrar');
             btn.innerText = "Salvando..."; btn.disabled = true;
 
-            // Envia todos os dados empacotados para a planilha
             fetch(urlScript, {
                 method: 'POST', mode: 'no-cors',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({ 
                     'nomeProjeto': nome,
+                    'modelo': modelo,
                     'fase': fase,
                     'versao': versao,
                     'responsavel': responsavel
                 })
             }).then(() => {
-                // Limpa os campos depois de salvar
                 document.getElementById('nomeProjeto').value = "";
+                document.getElementById('modeloProjeto').value = "";
                 document.getElementById('faseProjeto').value = "";
                 document.getElementById('versaoProjeto').value = "";
                 document.getElementById('responsavelProjeto').value = "";
