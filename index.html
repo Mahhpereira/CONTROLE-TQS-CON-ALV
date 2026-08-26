@@ -14,6 +14,7 @@
         .status.em-uso { background-color: #fefcbf; color: #b7791f; }
         .status.livre { background-color: #c6f6d5; color: #22543d; }
         .btn { display: block; width: 100%; padding: 10px; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-blue { background-color: #3182ce; color: white; }
         .btn-green { background-color: #38a169; color: white; }
         .btn-dark { background-color: #2d3748; color: white; }
@@ -28,8 +29,8 @@
         <!-- Área para Cadastrar Novo Projeto -->
         <div class="card cadastro">
             <h2 style="margin: 0 0 10px 0; font-size: 1.2rem;">➕ Novo Projeto</h2>
-            <input type="text" placeholder="Digite o nome do projeto..." id="nomeProjeto">
-            <button class="btn btn-dark" onclick="alert('Em breve, este botão vai salvar o projeto na sua planilha do Google e ele aparecerá na lista abaixo!')">Cadastrar Projeto</button>
+            <input type="text" placeholder="Ex: 1099-PANE-FOR-EX-R01" id="nomeProjeto">
+            <button id="btn-cadastrar" class="btn btn-dark" onclick="cadastrarProjeto()">Cadastrar Projeto</button>
         </div>
 
         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
@@ -41,7 +42,7 @@
             <p class="info"><strong>Fase:</strong> Forma</p>
             <p class="info"><strong>Versão Atual:</strong> R01</p>
             <p class="info"><strong>Com:</strong> Marina</p>
-            <button class="btn btn-green" onclick="alert('Aqui você vai avisar que copiou de volta pro TQS CON, informar a nova versão (ex: R02) e o que você alterou.')">Devolver para TQS CON</button>
+            <button class="btn btn-green" onclick="alert('Em breve a função de devolver!')">Devolver para TQS CON</button>
         </div>
 
         <!-- Exemplo de Projeto Livre -->
@@ -51,8 +52,43 @@
             <p class="info"><strong>Fase:</strong> Armação</p>
             <p class="info"><strong>Última Versão:</strong> R00</p>
             <p class="info"><strong>Última Nota:</strong> Projeto iniciado</p>
-            <button class="btn btn-blue" onclick="alert('Ao clicar aqui, o projeto ficará amarelo com o seu nome, avisando a todos que você está trabalhando nele no seu C:\\TQS.')">Pegar Projeto (Check-out)</button>
+            <button class="btn btn-blue" onclick="alert('Em breve a função de check-out!')">Pegar Projeto (Check-out)</button>
         </div>
     </div>
+
+    <!-- CÉREBRO DO APLICATIVO -->
+    <script>
+        function cadastrarProjeto() {
+            var nome = document.getElementById('nomeProjeto').value;
+            
+            if(nome.trim() === "") {
+                alert("Por favor, digite o nome do projeto antes de cadastrar.");
+                return;
+            }
+            
+            var btn = document.getElementById('btn-cadastrar');
+            btn.innerText = "Salvando na planilha...";
+            btn.disabled = true;
+
+            // O SEU LINK DO GOOGLE SCRIPT ESTÁ AQUI:
+            var url = "https://script.google.com/macros/s/AKfycbxzD6GmeW0Zbl-vC4_Q107_guVuxRpI1nqhHsPUXmqfhB8b53CvUEwlzbM6EMIN-uFb/exec";
+            
+            fetch(url, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ 'nomeProjeto': nome })
+            }).then(() => {
+                alert("Projeto salvo com sucesso na sua planilha!");
+                document.getElementById('nomeProjeto').value = "";
+                btn.innerText = "Cadastrar Projeto";
+                btn.disabled = false;
+            }).catch((error) => {
+                alert("Ops, deu um erro: " + error);
+                btn.innerText = "Cadastrar Projeto";
+                btn.disabled = false;
+            });
+        }
+    </script>
 </body>
 </html>
