@@ -10,16 +10,18 @@
         h1 { font-size: 1.5rem; text-align: center; color: #2c3e50; }
         .card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: white; }
         .cadastro { background-color: #e2e8f0; border-color: #cbd5e0; }
+        
+        /* Estilos dos novos campos do formulário */
+        label { font-weight: bold; font-size: 0.9rem; margin-top: 10px; display: block; color: #4a5568; }
+        input[type="text"] { width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 1rem; }
+        
         .status { font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; display: inline-block; margin-bottom: 10px; }
         .status.em-uso { background-color: #fefcbf; color: #b7791f; }
         .status.livre { background-color: #c6f6d5; color: #22543d; }
         .btn { display: block; width: 100%; padding: 10px; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; margin-top: 10px; font-weight: bold; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-blue { background-color: #3182ce; color: white; }
-        .btn-green { background-color: #38a169; color: white; }
         .btn-dark { background-color: #2d3748; color: white; }
         .info { font-size: 0.9rem; margin: 5px 0; color: #4a5568; }
-        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 1rem; }
         #carregando { text-align: center; color: #666; font-style: italic; }
     </style>
 </head>
@@ -27,10 +29,22 @@
     <div class="container">
         <h1>🏗️ Controle de Arquivos TQS</h1>
         
-        <!-- Cadastro -->
+        <!-- Formulário Completo -->
         <div class="card cadastro">
-            <h2 style="margin: 0 0 10px 0; font-size: 1.2rem;">➕ Novo Projeto / Check-out</h2>
-            <input type="text" placeholder="Ex: 1099-PANE-FOR-EX-R01" id="nomeProjeto">
+            <h2 style="margin: 0 0 10px 0; font-size: 1.2rem;">➕ Iniciar Novo Projeto</h2>
+            
+            <label>Nome do Projeto:</label>
+            <input type="text" id="nomeProjeto" placeholder="Ex: Residencial Alphaville">
+            
+            <label>Fase:</label>
+            <input type="text" id="faseProjeto" placeholder="Ex: Forma, Armação, Plantas...">
+            
+            <label>Versão:</label>
+            <input type="text" id="versaoProjeto" placeholder="Ex: R00">
+            
+            <label>Responsável:</label>
+            <input type="text" id="responsavelProjeto" placeholder="Ex: Marina">
+            
             <button id="btn-cadastrar" class="btn btn-dark" onclick="cadastrarProjeto()">Iniciar Projeto (Em Uso)</button>
         </div>
 
@@ -45,7 +59,6 @@
     <script>
         const urlScript = "https://script.google.com/macros/s/AKfycbxzD6GmeW0Zbl-vC4_Q107_guVuxRpI1nqhHsPUXmqfhB8b53CvUEwlzbM6EMIN-uFb/exec";
 
-        // Função para ler a planilha e mostrar na tela
         function carregarProjetos() {
             fetch(urlScript)
                 .then(resposta => resposta.json())
@@ -58,8 +71,7 @@
                         return;
                     }
 
-                    // Cria um "card" visual para cada linha da planilha
-                    dados.reverse().forEach(p => { // .reverse() mostra os mais novos primeiro
+                    dados.reverse().forEach(p => { 
                         let isEmUso = p.status.includes('Em uso');
                         let classeStatus = isEmUso ? 'em-uso' : 'livre';
                         let iconeStatus = isEmUso ? '⚠️' : '✅';
@@ -79,27 +91,44 @@
 
         function cadastrarProjeto() {
             var nome = document.getElementById('nomeProjeto').value;
-            if(nome.trim() === "") { alert("Digite o nome do projeto."); return; }
+            var fase = document.getElementById('faseProjeto').value;
+            var versao = document.getElementById('versaoProjeto').value;
+            var responsavel = document.getElementById('responsavelProjeto').value;
+
+            // Bloqueia se a pessoa esquecer de preencher o nome
+            if(nome.trim() === "") { 
+                alert("O Nome do Projeto é obrigatório."); 
+                return; 
+            }
             
             var btn = document.getElementById('btn-cadastrar');
             btn.innerText = "Salvando..."; btn.disabled = true;
 
+            // Envia todos os dados empacotados para a planilha
             fetch(urlScript, {
                 method: 'POST', mode: 'no-cors',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ 'nomeProjeto': nome })
+                body: new URLSearchParams({ 
+                    'nomeProjeto': nome,
+                    'fase': fase,
+                    'versao': versao,
+                    'responsavel': responsavel
+                })
             }).then(() => {
+                // Limpa os campos depois de salvar
                 document.getElementById('nomeProjeto').value = "";
+                document.getElementById('faseProjeto').value = "";
+                document.getElementById('versaoProjeto').value = "";
+                document.getElementById('responsavelProjeto').value = "";
+
                 btn.innerText = "Iniciar Projeto (Em Uso)";
                 btn.disabled = false;
                 
-                // Recarrega a lista instantaneamente após salvar
                 document.getElementById('lista-projetos').innerHTML = "<p id='carregando'>⏳ Atualizando lista...</p>";
                 carregarProjetos();
             });
         }
 
-        // Faz os projetos carregarem assim que a página abre
         window.onload = carregarProjetos;
     </script>
 </body>
