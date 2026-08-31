@@ -30,6 +30,7 @@
         .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; margin-top: 10px; font-weight: bold; }
         .btn-dark { background-color: #2d3748; color: white; }
         .btn-blue { background-color: #3182ce; color: white; }
+        .btn-green { background-color: #38a169; color: white; }
         .info { font-size: 0.9rem; margin: 5px 0; color: #4a5568; }
         
         .table-container { overflow-x: auto; margin-top: 15px; }
@@ -46,7 +47,7 @@
         
         <div class="nav-bar">
             <button class="active" onclick="mudarAba(event, 'tab-inicio')">📋 Projetos</button>
-            <button onclick="mudarAba(event, 'tab-movimentar')">🔄 Check-out</button>
+            <button onclick="mudarAba(event, 'tab-movimentar')">📥 Check-in</button>
             <button onclick="mudarAba(event, 'tab-ficha')">📄 Ficha Técnica</button>
             <button onclick="mudarAba(event, 'tab-reunioes')">🤝 Reuniões</button>
             <button onclick="mudarAba(event, 'tab-lista')">📊 Lista Mestra</button>
@@ -58,10 +59,10 @@
             <div id="lista-projetos"><p style="text-align:center; color:#666;">⏳ Carregando projetos...</p></div>
         </div>
 
-        <!-- ABA 2: CHECK-OUT -->
+        <!-- ABA 2: CHECK-IN -->
         <div id="tab-movimentar" class="tab-content">
             <div class="form-section">
-                <h2 style="margin: 0 0 15px 0; font-size: 1.2rem;">Registrar Uso do Modelo</h2>
+                <h2 style="margin: 0 0 15px 0; font-size: 1.2rem;">Fazer Check-in (Pegar Projeto)</h2>
                 <label>Projeto:</label>
                 <input type="text" id="nomeProjeto">
                 <label>Modelo:</label>
@@ -79,7 +80,7 @@
                 <input type="text" id="versaoProjeto">
                 <label>Responsável:</label>
                 <input type="text" id="responsavelProjeto">
-                <button id="btn-cadastrar" class="btn btn-dark" onclick="cadastrarProjeto()">Iniciar Projeto</button>
+                <button id="btn-cadastrar" class="btn btn-dark" onclick="cadastrarProjeto()">Registrar Check-in</button>
             </div>
         </div>
 
@@ -108,7 +109,6 @@
                 <option value="">Aguardando dados...</option>
             </select>
             
-            <!-- Tabela idêntica ao padrão do escritório -->
             <div class="table-container" style="display:none;" id="tabela-container">
                 <table>
                     <thead>
@@ -154,13 +154,23 @@
                         dados.projetos.reverse().forEach(p => { 
                             let isEmUso = p.status.includes('Em uso');
                             let classeStatus = isEmUso ? 'em-uso' : 'livre';
-                            let iconeStatus = isEmUso ? '⚠️' : '🟢';
+                            let iconeStatus = isEmUso ? '⚠️' : '✅';
+                            
+                            // Os botões verdes agora se chamam Check-out (Devolver)
+                            let botoesDevolver = isEmUso ? `
+                                <div style="display:flex; gap:10px; margin-top:15px;">
+                                    <button class="btn btn-green" style="margin-top:0;" onclick="devolverProjeto('${p.projeto}', 'CON')">Check-out para TQS CON</button>
+                                    <button class="btn btn-green" style="margin-top:0;" onclick="devolverProjeto('${p.projeto}', 'ALV')">Check-out para TQS ALV</button>
+                                </div>
+                            ` : '';
+
                             lista.innerHTML += `
                             <div class="card">
                                 <span class="status ${classeStatus}">${iconeStatus} ${p.status}</span>
                                 <h2 style="margin: 5px 0;">${p.projeto}</h2>
                                 <p class="info"><strong>Modelo:</strong> ${p.modelo || '-'}</p>
                                 <p class="info"><strong>Fase:</strong> ${p.fase} | <strong>Versão:</strong> ${p.versao} | <strong>Com:</strong> ${p.responsavel}</p>
+                                ${botoesDevolver}
                             </div>`;
                         });
                     }
@@ -210,6 +220,7 @@
             });
         }
 
+        // CADASTRO NOVO (CHECK-IN)
         function cadastrarProjeto() {
             var nome = document.getElementById('nomeProjeto').value;
             var modelo = document.getElementById('modeloProjeto').value;
@@ -223,10 +234,35 @@
             fetch(urlScript, {
                 method: 'POST', mode: 'no-cors',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ 'nomeProjeto': nome, 'modelo': modelo, 'fase': fase, 'versao': versao, 'responsavel': responsavel })
+                body: new URLSearchParams({ 
+                    'action': 'cadastrar', 
+                    'nomeProjeto': nome, 'modelo': modelo, 'fase': fase, 'versao': versao, 'responsavel': responsavel 
+                })
             }).then(() => {
-                btn.innerText = "Iniciar Projeto"; btn.disabled = false;
-                alert("Projeto salvo com sucesso!");
+                btn.innerText = "Registrar Check-in"; btn.disabled = false;
+                alert("Check-in realizado com sucesso!");
+                window.location.reload();
+            });
+        }
+
+        // DEVOLVER PROJETO (CHECK-OUT)
+        function devolverProjeto(nomeProjeto, destino) {
+            if(!confirm(`Confirma o Check-out (devolução) do projeto "${nomeProjeto}" para o TQS ${destino}?`)) {
+                return; 
+            }
+
+            let novoStatus = destino === 'CON' ? '✅ Disponível no TQS CON' : '✅ Disponível no TQS ALV';
+
+            fetch(urlScript, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ 
+                    'action': 'devolver', 
+                    'nomeProjeto': nomeProjeto,
+                    'novoStatus': novoStatus
+                })
+            }).then(() => {
+                alert("Check-out realizado com sucesso!");
                 window.location.reload();
             });
         }
