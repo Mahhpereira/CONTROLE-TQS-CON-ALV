@@ -156,7 +156,7 @@
                             let classeStatus = isEmUso ? 'em-uso' : 'livre';
                             let iconeStatus = isEmUso ? '⚠️' : '✅';
                             
-                            // Os botões verdes agora se chamam Check-out (Devolver)
+                            // Cria os botões de Check-out apenas se estiver em uso
                             let botoesDevolver = isEmUso ? `
                                 <div style="display:flex; gap:10px; margin-top:15px;">
                                     <button class="btn btn-green" style="margin-top:0;" onclick="devolverProjeto('${p.projeto}', 'CON')">Check-out para TQS CON</button>
@@ -164,141 +164,7 @@
                                 </div>
                             ` : '';
 
-                            lista.innerHTML += `
-                            <div class="card">
-                                <span class="status ${classeStatus}">${iconeStatus} ${p.status}</span>
-                                <h2 style="margin: 5px 0;">${p.projeto}</h2>
-                                <p class="info"><strong>Modelo:</strong> ${p.modelo || '-'}</p>
-                                <p class="info"><strong>Fase:</strong> ${p.fase} | <strong>Versão:</strong> ${p.versao} | <strong>Com:</strong> ${p.responsavel}</p>
-                                ${botoesDevolver}
-                            </div>`;
-                        });
-                    }
-
-                    baseListaMestra = dados.mestra;
-                    const select = document.getElementById('filtro-empreendimento');
-                    select.innerHTML = '<option value="">Selecione um projeto...</option>';
-                    
-                    const nomesUnicos = [...new Set(baseListaMestra.map(item => item.empreendimento))];
-                    nomesUnicos.forEach(nome => {
-                        if(nome) select.innerHTML += `<option value="${nome}">${nome}</option>`;
-                    });
-                });
-        };
-
-        function filtrarLista() {
-            const projetoSelecionado = document.getElementById('filtro-empreendimento').value;
-            const container = document.getElementById('tabela-container');
-            const tbody = document.getElementById('tbody-mestra');
-            tbody.innerHTML = ""; 
-
-            if(!projetoSelecionado) {
-                container.style.display = "none";
-                return;
-            }
-
-            container.style.display = "block";
-            const linhasFiltradas = baseListaMestra.filter(item => item.empreendimento === projetoSelecionado);
-
-            linhasFiltradas.forEach(linha => {
-                let statusUpper = (linha.status || "").toUpperCase();
-                let classeStatus = statusUpper === 'CONCLUÍDO' ? 'td-concluido' : 'td-pendente';
-                
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${linha.arquivo || '-'}</td>
-                        <td>${linha.folha || '-'}</td>
-                        <td>${linha.descricao || '-'}</td>
-                        <td>${linha.revisao || '-'}</td>
-                        <td>${linha.inicio || '-'}</td>
-                        <td>${linha.termino || '-'}</td>
-                        <td>${linha.projetista || '-'}</td>
-                        <td class="${classeStatus}">${statusUpper}</td>
-                        <td style="text-align:center; color:red; font-weight:bold;">${linha.cadastro || ''}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        // CADASTRO NOVO (CHECK-IN)
-        function cadastrarProjeto() {
-            var nome = document.getElementById('nomeProjeto').value;
-            var modelo = document.getElementById('modeloProjeto').value;
-            var fase = document.getElementById('faseProjeto').value;
-            var versao = document.getElementById('versaoProjeto').value;
-            var responsavel = document.getElementById('responsavelProjeto').value;
-            
-            var btn = document.getElementById('btn-cadastrar');
-            btn.innerText = "Salvando..."; btn.disabled = true;
-
-            fetch(urlScript, {
-                method: 'POST', mode: 'no-cors',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ 
-                    'action': 'cadastrar', 
-                    'nomeProjeto': nome, 'modelo': modelo, 'fase': fase, 'versao': versao, 'responsavel': responsavel 
-                })
-            }).then(() => {
-                btn.innerText = "Registrar Check-in"; btn.disabled = false;
-                alert("Check-in realizado com sucesso!");
-                window.location.reload();
-            });
-        }
-
-        // DEVOLVER PROJETO (CHECK-OUT)
-        function devolverProjeto(nomeProjeto, destino) {
-            if(!confirm(`Confirma o Check-out (devolução) do projeto "${nomeProjeto}" para o TQS ${destino}?`)) {
-                return; 
-            }
-
-            let novoStatus = destino === 'CON' ? '✅ Disponível no TQS CON' : '✅ Disponível no TQS ALV';
-
-            fetch(urlScript, {
-                method: 'POST', mode: 'no-cors',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ 
-                    'action': 'devolver', 
-                    'nomeProjeto': nomeProjeto,
-                    'novoStatus': novoStatus
-                })
-            }).then(() => {
-                alert("Check-out realizado com sucesso!");
-                window.location.reload();
-            });
-        }
-        <script>
-        const urlScript = "https://script.google.com/macros/s/AKfycbxzD6GmeW0Zbl-vC4_Q107_guVuxRpI1nqhHsPUXmqfhB8b53CvUEwlzbM6EMIN-uFb/exec";
-        let baseListaMestra = []; 
-
-        function mudarAba(evento, idAba) {
-            document.querySelectorAll('.tab-content').forEach(aba => aba.classList.remove('active'));
-            document.querySelectorAll('.nav-bar button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(idAba).classList.add('active');
-            evento.currentTarget.classList.add('active');
-        }
-
-        window.onload = function() {
-            fetch(urlScript)
-                .then(resposta => resposta.json())
-                .then(dados => {
-                    const lista = document.getElementById('lista-projetos');
-                    lista.innerHTML = ""; 
-                    if(dados.projetos.length === 0) {
-                        lista.innerHTML = "<p style='text-align:center;'>Nenhum projeto cadastrado.</p>";
-                    } else {
-                        dados.projetos.reverse().forEach(p => { 
-                            let isEmUso = p.status.includes('Em uso');
-                            let classeStatus = isEmUso ? 'em-uso' : 'livre';
-                            let iconeStatus = isEmUso ? '⚠️' : '✅';
-                            
-                            let botoesDevolver = isEmUso ? `
-                                <div style="display:flex; gap:10px; margin-top:15px;">
-                                    <button class="btn btn-green" style="margin-top:0;" onclick="devolverProjeto('${p.projeto}', 'CON')">Check-out para TQS CON</button>
-                                    <button class="btn btn-green" style="margin-top:0;" onclick="devolverProjeto('${p.projeto}', 'ALV')">Check-out para TQS ALV</button>
-                                </div>
-                            ` : '';
-
-                            // Se estiver em uso, mostra o nome. Se estiver livre, a informação "Com:" desaparece.
+                            // Se estiver em uso, mostra o nome de quem pegou. Se estiver livre, some o campo.
                             let infoResponsavel = isEmUso ? ` | <strong>Com:</strong> ${p.responsavel}` : '';
 
                             lista.innerHTML += `
@@ -403,7 +269,6 @@
                 window.location.reload();
             });
         }
-    
     </script>
 </body>
 </html>
