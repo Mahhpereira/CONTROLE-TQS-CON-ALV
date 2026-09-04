@@ -32,20 +32,18 @@
         .btn-blue { background-color: #3182ce; color: white; }
         .btn-green { background-color: #38a169; color: white; }
         .info { font-size: 0.9rem; margin: 5px 0; color: #4a5568; }
-        
-        #area-botao-link { margin-top: 20px; padding: 20px; background-color: #ebf8ff; border: 1px solid #bee3f8; border-radius: 8px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🏗️ Sistema de Gestão</h1>
         
+        <!-- Menu de Navegação Limpo -->
         <div class="nav-bar">
             <button class="active" onclick="mudarAba(event, 'tab-inicio')">📋 Projetos</button>
             <button onclick="mudarAba(event, 'tab-movimentar')">📥 Check-in</button>
             <button onclick="mudarAba(event, 'tab-ficha')">📄 Ficha Técnica</button>
             <button onclick="mudarAba(event, 'tab-reunioes')">🤝 Reuniões</button>
-            <button onclick="mudarAba(event, 'tab-lista')">📊 Lista Mestra</button>
         </div>
 
         <!-- ABA 1: PROJETOS -->
@@ -95,28 +93,10 @@
             </div>
         </div>
 
-        <!-- ABA 5: LISTA MESTRA (PORTAL DE LINKS) -->
-        <div id="tab-lista" class="tab-content">
-            <h2 style="font-size: 1.2rem; margin-bottom: 5px;">Acesso à Lista Mestra</h2>
-            <p style="font-size: 0.9rem; color: #666;">Selecione o empreendimento para abrir a planilha oficial do projeto.</p>
-            
-            <label>Selecione o Empreendimento:</label>
-            <select id="filtro-empreendimento" onchange="filtrarLista()">
-                <option value="">Aguardando dados...</option>
-            </select>
-            
-            <!-- Área onde o botão vai aparecer -->
-            <div id="area-botao-link" style="display:none;">
-                <h3 id="titulo-projeto-link" style="margin-top:0; color:#2c3e50;"></h3>
-                <a id="botao-abrir-planilha" href="#" target="_blank" class="btn btn-blue">Abrir Planilha Mestra ↗</a>
-            </div>
-        </div>
-
     </div>
 
     <script>
         const urlScript = "https://script.google.com/macros/s/AKfycbxzD6GmeW0Zbl-vC4_Q107_guVuxRpI1nqhHsPUXmqfhB8b53CvUEwlzbM6EMIN-uFb/exec";
-        let baseListaMestra = []; 
 
         function mudarAba(evento, idAba) {
             document.querySelectorAll('.tab-content').forEach(aba => aba.classList.remove('active'));
@@ -131,10 +111,10 @@
                 .then(dados => {
                     const lista = document.getElementById('lista-projetos');
                     lista.innerHTML = ""; 
-                    if(dados.projetos.length === 0) {
+                    if(dados.length === 0) {
                         lista.innerHTML = "<p style='text-align:center;'>Nenhum projeto cadastrado.</p>";
                     } else {
-                        dados.projetos.reverse().forEach(p => { 
+                        dados.reverse().forEach(p => { 
                             let isEmUso = p.status.includes('Em uso');
                             let classeStatus = isEmUso ? 'em-uso' : 'livre';
                             let iconeStatus = isEmUso ? '⚠️' : '✅';
@@ -158,39 +138,8 @@
                             </div>`;
                         });
                     }
-
-                    // Prepara o menu de links
-                    baseListaMestra = dados.mestra;
-                    const select = document.getElementById('filtro-empreendimento');
-                    select.innerHTML = '<option value="">Selecione um projeto...</option>';
-                    
-                    baseListaMestra.forEach(item => {
-                        if(item.empreendimento) {
-                            select.innerHTML += `<option value="${item.link}">${item.empreendimento}</option>`;
-                        }
-                    });
                 });
         };
-
-        // Função que exibe o botão com o link correto
-        function filtrarLista() {
-            const linkSelecionado = document.getElementById('filtro-empreendimento').value;
-            const selectElement = document.getElementById('filtro-empreendimento');
-            const nomeProjeto = selectElement.options[selectElement.selectedIndex].text;
-            
-            const areaBotao = document.getElementById('area-botao-link');
-            const botaoAbrir = document.getElementById('botao-abrir-planilha');
-            const titulo = document.getElementById('titulo-projeto-link');
-
-            if(!linkSelecionado) {
-                areaBotao.style.display = "none";
-                return;
-            }
-
-            titulo.innerText = nomeProjeto;
-            botaoAbrir.href = linkSelecionado;
-            areaBotao.style.display = "block";
-        }
 
         // CADASTRO NOVO (CHECK-IN)
         function cadastrarProjeto() {
