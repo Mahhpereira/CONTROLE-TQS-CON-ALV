@@ -38,7 +38,6 @@
     <div class="container">
         <h1>🏗️ Sistema de Gestão</h1>
         
-        <!-- Menu de Navegação Limpo -->
         <div class="nav-bar">
             <button class="active" onclick="mudarAba(event, 'tab-inicio')">📋 Projetos</button>
             <button onclick="mudarAba(event, 'tab-movimentar')">📥 Check-in</button>
@@ -111,37 +110,38 @@
                 .then(dados => {
                     const lista = document.getElementById('lista-projetos');
                     lista.innerHTML = ""; 
-                    if(dados.length === 0) {
+                    
+                    if(!dados.projetos || dados.projetos.length === 0) {
                         lista.innerHTML = "<p style='text-align:center;'>Nenhum projeto cadastrado.</p>";
-                    } else {
-                        dados.reverse().forEach(p => { 
-                            let isEmUso = p.status.includes('Em uso');
-                            let classeStatus = isEmUso ? 'em-uso' : 'livre';
-                            let iconeStatus = isEmUso ? '⚠️' : '✅';
-                            
-                            let botoesDevolver = isEmUso ? `
-                                <div style="display:flex; gap:10px; margin-top:15px;">
-                                    <button class="btn btn-green" style="margin-top:0;" onclick="devolverProjeto('${p.projeto}', 'CON')">Check-out para TQS CON</button>
-                                    <button class="btn btn-green" style="margin-top:0;" onclick="devolverProjeto('${p.projeto}', 'ALV')">Check-out para TQS ALV</button>
-                                </div>
-                            ` : '';
-
-                            let infoResponsavel = isEmUso ? ` | <strong>Com:</strong> ${p.responsavel}` : '';
-
-                            lista.innerHTML += `
-                            <div class="card">
-                                <span class="status ${classeStatus}">${iconeStatus} ${p.status}</span>
-                                <h2 style="margin: 5px 0;">${p.projeto}</h2>
-                                <p class="info"><strong>Modelo:</strong> ${p.modelo || '-'}</p>
-                                <p class="info"><strong>Fase:</strong> ${p.fase || '-'} | <strong>Versão:</strong> ${p.versao || '-'}${infoResponsavel}</p>
-                                ${botoesDevolver}
-                            </div>`;
-                        });
+                        return;
                     }
+
+                    dados.projetos.reverse().forEach(p => { 
+                        let isEmUso = p.status.includes('Em uso');
+                        let classeStatus = isEmUso ? 'em-uso' : 'livre';
+                        let iconeStatus = isEmUso ? '⚠️' : '✅';
+                        
+                        let botoesDevolver = isEmUso ? `
+                            <div style="display:flex; gap:10px; margin-top:15px;">
+                                <button class="btn btn-green" style="margin-top:0;" onclick="devolverProjeto('${p.projeto}', 'CON')">Check-out para TQS CON</button>
+                                <button class="btn btn-green" style="margin-top:0;" onclick="devolverProjeto('${p.projeto}', 'ALV')">Check-out para TQS ALV</button>
+                            </div>
+                        ` : '';
+
+                        let infoResponsavel = isEmUso ? ` | <strong>Com:</strong> ${p.responsavel}` : '';
+
+                        lista.innerHTML += `
+                        <div class="card">
+                            <span class="status ${classeStatus}">${iconeStatus} ${p.status}</span>
+                            <h2 style="margin: 5px 0;">${p.projeto}</h2>
+                            <p class="info"><strong>Modelo:</strong> ${p.modelo || '-'}</p>
+                            <p class="info"><strong>Fase:</strong> ${p.fase || '-'} | <strong>Versão:</strong> ${p.versao || '-'}${infoResponsavel}</p>
+                            ${botoesDevolver}
+                        </div>`;
+                    });
                 });
         };
 
-        // CADASTRO NOVO (CHECK-IN)
         function cadastrarProjeto() {
             var nome = document.getElementById('nomeProjeto').value;
             var modelo = document.getElementById('modeloProjeto').value;
@@ -166,7 +166,6 @@
             });
         }
 
-        // DEVOLVER PROJETO (CHECK-OUT)
         function devolverProjeto(nomeProjeto, destino) {
             if(!confirm(`Confirma o Check-out (devolução) do projeto "${nomeProjeto}" para o TQS ${destino}?`)) {
                 return; 
