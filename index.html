@@ -27,18 +27,13 @@
         .status.em-uso { background-color: #fefcbf; color: #b7791f; }
         .status.livre { background-color: #c6f6d5; color: #22543d; }
         
-        .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; margin-top: 10px; font-weight: bold; text-decoration: none; text-align: center; }
         .btn-dark { background-color: #2d3748; color: white; }
         .btn-blue { background-color: #3182ce; color: white; }
         .btn-green { background-color: #38a169; color: white; }
         .info { font-size: 0.9rem; margin: 5px 0; color: #4a5568; }
         
-        .table-container { overflow-x: auto; margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; font-size: 0.85rem; }
-        th { background-color: #4a5568; color: white; padding: 10px; text-align: left; border: 1px solid #2d3748; }
-        td { padding: 8px 10px; border: 1px solid #e2e8f0; }
-        .td-concluido { background-color: #c6f6d5; color: #22543d; font-weight: bold; text-align: center; }
-        .td-pendente { background-color: #fed7d7; color: #9b2c2c; font-weight: bold; text-align: center; }
+        #area-botao-link { margin-top: 20px; padding: 20px; background-color: #ebf8ff; border: 1px solid #bee3f8; border-radius: 8px; text-align: center; }
     </style>
 </head>
 <body>
@@ -100,32 +95,20 @@
             </div>
         </div>
 
-        <!-- ABA 5: LISTA MESTRA DINÂMICA -->
+        <!-- ABA 5: LISTA MESTRA (PORTAL DE LINKS) -->
         <div id="tab-lista" class="tab-content">
-            <h2 style="font-size: 1.2rem; margin-bottom: 5px;">Consulta - Lista Mestra</h2>
+            <h2 style="font-size: 1.2rem; margin-bottom: 5px;">Acesso à Lista Mestra</h2>
+            <p style="font-size: 0.9rem; color: #666;">Selecione o empreendimento para abrir a planilha oficial do projeto.</p>
             
             <label>Selecione o Empreendimento:</label>
             <select id="filtro-empreendimento" onchange="filtrarLista()">
                 <option value="">Aguardando dados...</option>
             </select>
             
-            <div class="table-container" style="display:none;" id="tabela-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>NOME DO ARQUIVO</th>
-                            <th>FOLHA</th>
-                            <th>DESCRIÇÃO</th>
-                            <th>REVISÃO</th>
-                            <th>INÍCIO</th>
-                            <th>TÉRMINO</th>
-                            <th>PROJETISTA</th>
-                            <th>STATUS</th>
-                            <th>CADASTRO</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody-mestra"></tbody>
-                </table>
+            <!-- Área onde o botão vai aparecer -->
+            <div id="area-botao-link" style="display:none;">
+                <h3 id="titulo-projeto-link" style="margin-top:0; color:#2c3e50;"></h3>
+                <a id="botao-abrir-planilha" href="#" target="_blank" class="btn btn-blue">Abrir Planilha Mestra ↗</a>
             </div>
         </div>
 
@@ -156,7 +139,6 @@
                             let classeStatus = isEmUso ? 'em-uso' : 'livre';
                             let iconeStatus = isEmUso ? '⚠️' : '✅';
                             
-                            // Cria os botões de Check-out apenas se estiver em uso
                             let botoesDevolver = isEmUso ? `
                                 <div style="display:flex; gap:10px; margin-top:15px;">
                                     <button class="btn btn-green" style="margin-top:0;" onclick="devolverProjeto('${p.projeto}', 'CON')">Check-out para TQS CON</button>
@@ -164,7 +146,6 @@
                                 </div>
                             ` : '';
 
-                            // Se estiver em uso, mostra o nome de quem pegou. Se estiver livre, some o campo.
                             let infoResponsavel = isEmUso ? ` | <strong>Com:</strong> ${p.responsavel}` : '';
 
                             lista.innerHTML += `
@@ -178,49 +159,37 @@
                         });
                     }
 
+                    // Prepara o menu de links
                     baseListaMestra = dados.mestra;
                     const select = document.getElementById('filtro-empreendimento');
                     select.innerHTML = '<option value="">Selecione um projeto...</option>';
                     
-                    const nomesUnicos = [...new Set(baseListaMestra.map(item => item.empreendimento))];
-                    nomesUnicos.forEach(nome => {
-                        if(nome) select.innerHTML += `<option value="${nome}">${nome}</option>`;
+                    baseListaMestra.forEach(item => {
+                        if(item.empreendimento) {
+                            select.innerHTML += `<option value="${item.link}">${item.empreendimento}</option>`;
+                        }
                     });
                 });
         };
 
+        // Função que exibe o botão com o link correto
         function filtrarLista() {
-            const projetoSelecionado = document.getElementById('filtro-empreendimento').value;
-            const container = document.getElementById('tabela-container');
-            const tbody = document.getElementById('tbody-mestra');
-            tbody.innerHTML = ""; 
+            const linkSelecionado = document.getElementById('filtro-empreendimento').value;
+            const selectElement = document.getElementById('filtro-empreendimento');
+            const nomeProjeto = selectElement.options[selectElement.selectedIndex].text;
+            
+            const areaBotao = document.getElementById('area-botao-link');
+            const botaoAbrir = document.getElementById('botao-abrir-planilha');
+            const titulo = document.getElementById('titulo-projeto-link');
 
-            if(!projetoSelecionado) {
-                container.style.display = "none";
+            if(!linkSelecionado) {
+                areaBotao.style.display = "none";
                 return;
             }
 
-            container.style.display = "block";
-            const linhasFiltradas = baseListaMestra.filter(item => item.empreendimento === projetoSelecionado);
-
-            linhasFiltradas.forEach(linha => {
-                let statusUpper = (linha.status || "").toUpperCase();
-                let classeStatus = statusUpper === 'CONCLUÍDO' ? 'td-concluido' : 'td-pendente';
-                
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${linha.arquivo || '-'}</td>
-                        <td>${linha.folha || '-'}</td>
-                        <td>${linha.descricao || '-'}</td>
-                        <td>${linha.revisao || '-'}</td>
-                        <td>${linha.inicio || '-'}</td>
-                        <td>${linha.termino || '-'}</td>
-                        <td>${linha.projetista || '-'}</td>
-                        <td class="${classeStatus}">${statusUpper}</td>
-                        <td style="text-align:center; color:red; font-weight:bold;">${linha.cadastro || ''}</td>
-                    </tr>
-                `;
-            });
+            titulo.innerText = nomeProjeto;
+            botaoAbrir.href = linkSelecionado;
+            areaBotao.style.display = "block";
         }
 
         // CADASTRO NOVO (CHECK-IN)
