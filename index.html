@@ -12,7 +12,6 @@
         .sidebar { width: 70px; background-color: #2b2d30; display: flex; flex-direction: column; align-items: center; padding-top: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); z-index: 10; }
         .sidebar button { width: 45px; height: 45px; border-radius: 8px; border: none; background: transparent; color: white; margin-bottom: 15px; cursor: pointer; transition: 0.2s; font-size: 20px; display: flex; justify-content: center; align-items: center; }
         .sidebar button:hover { background-color: #3e4145; }
-        /* A cor verde-limão de destaque da imagem */
         .sidebar button.active { background-color: #d1e024; color: #2b2d30; } 
         
         /* ÁREA CENTRAL DO CONTEÚDO */
@@ -24,33 +23,34 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
+        /* ENVOLVIMENTO CENTRALIZADO PARA FORMULÁRIOS */
+        .centered-wrapper { max-width: 700px; margin: 0 auto; }
+        .centered-wrapper h1, .centered-wrapper .subtitle { text-align: center; }
+        
         /* FORMULÁRIOS ESTILO CLEAN */
-        .form-section { background-color: white; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; margin-bottom: 15px; max-width: 800px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .form-section { background-color: white; border: 1px solid #e2e8f0; padding: 30px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .section-title { background: #f8f9fa; color: #333; padding: 8px 12px; font-size: 0.85rem; font-weight: bold; border-radius: 4px; border-left: 4px solid #d1e024; margin-bottom: 15px; margin-top: 20px; text-transform: uppercase; }
-        label { font-weight: 600; font-size: 0.85rem; margin-top: 15px; display: block; color: #4a5568; }
+        label { font-weight: 600; font-size: 0.85rem; margin-top: 15px; display: block; color: #4a5568; text-align: left; }
         input[type="text"], select, textarea { width: 100%; padding: 10px 12px; margin: 5px 0 0 0; border: 1px solid #cbd5e1; border-radius: 5px; box-sizing: border-box; font-family: inherit; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
         input[type="text"]:focus, select:focus, textarea:focus { border-color: #a3b81d; }
         
-        /* CARDS HORIZONTAIS ESTILO TAREFAS (DA IMAGEM) */
+        /* CARDS HORIZONTAIS ESTILO TAREFAS */
         .task-card { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: 0.2s; }
         .task-card:hover { border-color: #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .task-info { display: flex; flex-direction: column; gap: 8px; }
-        
         .task-header { display: flex; align-items: center; gap: 12px; }
         .task-title { font-size: 1rem; font-weight: bold; color: #1e293b; }
-        
         .task-details { font-size: 0.85rem; color: #64748b; display: flex; align-items: center; gap: 8px; }
-        
         .task-actions { display: flex; align-items: center; gap: 10px; }
         
         /* STATUS BADGES */
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
-        .badge.em-uso { background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; } /* Amarelo/Laranja igual "Aguard. Validação" */
-        .badge.livre { background-color: #d1fae5; color: #047857; border: 1px solid #a7f3d0; } /* Verde igual "Concluída" */
+        .badge.em-uso { background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; } 
+        .badge.livre { background-color: #d1fae5; color: #047857; border: 1px solid #a7f3d0; } 
         
         /* BOTÕES */
         .btn { padding: 10px 16px; border: none; border-radius: 5px; font-size: 0.9rem; cursor: pointer; font-weight: 600; text-align: center; transition: 0.2s; }
-        .btn-dark { background-color: #2b2d30; color: white; margin-top: 20px; width: 100%; }
+        .btn-dark { background-color: #2b2d30; color: white; margin-top: 25px; width: 100%; }
         .btn-dark:hover { background-color: #3e4145; }
         .btn-outline { background-color: white; border: 1px solid #cbd5e1; color: #334155; font-size: 0.85rem; padding: 8px 12px; border-radius: 20px; }
         .btn-outline:hover { background-color: #f8fafc; border-color: #94a3b8; }
@@ -61,7 +61,6 @@
 
     <!-- SIDEBAR -->
     <div class="sidebar">
-        <!-- Uso emojis como ícones para manter o código limpo, mas eles simulam os ícones da sua imagem -->
         <button class="active" onclick="mudarAba(event, 'tab-inicio')" title="Projetos">📋</button>
         <button onclick="mudarAba(event, 'tab-movimentar')" title="Check-in">📥</button>
         <button onclick="mudarAba(event, 'tab-ficha')" title="Ficha Técnica">📄</button>
@@ -71,7 +70,7 @@
     <!-- ÁREA PRINCIPAL -->
     <div class="main-content">
         
-        <!-- ABA 1: PROJETOS (Estilo Dashboard de Tarefas) -->
+        <!-- ABA 1: PROJETOS (Mantém largura total) -->
         <div id="tab-inicio" class="tab-content active">
             <h1>Modelos - Concreto Armado</h1>
             <p class="subtitle" id="contador-projetos">Carregando status dos modelos...</p>
@@ -81,84 +80,90 @@
             </div>
         </div>
 
-        <!-- ABA 2: CHECK-IN -->
+        <!-- ABA 2: CHECK-IN (Centralizada) -->
         <div id="tab-movimentar" class="tab-content">
-            <h1>Fazer Check-in</h1>
-            <p class="subtitle">Registre a entrada de um projeto para o seu C:\TQS</p>
-            
-            <div class="form-section">
-                <label>Projeto:</label>
-                <input type="text" id="nomeProjeto" placeholder="Nome do Empreendimento">
-                <label>Modelo:</label>
-                <input type="text" id="modeloProjeto" placeholder="Ex: 1099-PANE-FOR-EX-R01">
-                <label>Fase:</label>
-                <select id="faseProjeto">
-                    <option value="">Selecione a fase...</option>
-                    <option value="EP">EP - Estudo Preliminar</option>
-                    <option value="AP">AP - Anteprojeto</option>
-                    <option value="PR">PR - Pré-executivo</option>
-                    <option value="EX">EX - Executivo</option>
-                    <option value="LO">LO - Liberado Obra</option>
-                </select>
-                <label>Versão:</label>
-                <input type="text" id="versaoProjeto" placeholder="Ex: R01">
-                <label>Responsável:</label>
-                <input type="text" id="responsavelProjeto" placeholder="Seu nome">
-                <button id="btn-cadastrar" class="btn btn-dark" onclick="cadastrarProjeto()">Registrar Check-in</button>
+            <div class="centered-wrapper">
+                <h1>Fazer Check-in</h1>
+                <p class="subtitle">Registre a entrada de um projeto para o seu C:\TQS</p>
+                
+                <div class="form-section">
+                    <label>Projeto:</label>
+                    <input type="text" id="nomeProjeto" placeholder="Nome do Empreendimento">
+                    <label>Modelo:</label>
+                    <input type="text" id="modeloProjeto" placeholder="Ex: 1099-PANE-FOR-EX-R01">
+                    <label>Fase:</label>
+                    <select id="faseProjeto">
+                        <option value="">Selecione a fase...</option>
+                        <option value="EP">EP - Estudo Preliminar</option>
+                        <option value="AP">AP - Anteprojeto</option>
+                        <option value="PR">PR - Pré-executivo</option>
+                        <option value="EX">EX - Executivo</option>
+                        <option value="LO">LO - Liberado Obra</option>
+                    </select>
+                    <label>Versão:</label>
+                    <input type="text" id="versaoProjeto" placeholder="Ex: R01">
+                    <label>Responsável:</label>
+                    <input type="text" id="responsavelProjeto" placeholder="Seu nome">
+                    <button id="btn-cadastrar" class="btn btn-dark" onclick="cadastrarProjeto()">Registrar Check-in</button>
+                </div>
             </div>
         </div>
 
-        <!-- ABA 3: FICHA TÉCNICA -->
+        <!-- ABA 3: FICHA TÉCNICA (Centralizada) -->
         <div id="tab-ficha" class="tab-content">
-            <h1>Ficha do Projeto (IPL003)</h1>
-            <p class="subtitle">Cadastre ou consulte os dados básicos de entrega</p>
-            
-            <div class="form-section">
-                <label style="margin-top:0;">Consultar Ficha Cadastrada:</label>
-                <select id="select-consulta-ficha" onchange="carregarFichaSelecionada()">
-                    <option value="">-- Criar nova ficha ou selecionar existente --</option>
-                </select>
+            <div class="centered-wrapper">
+                <h1>Ficha do Projeto (IPL003)</h1>
+                <p class="subtitle">Cadastre ou consulte os dados básicos de entrega</p>
+                
+                <div class="form-section">
+                    <label style="margin-top:0;">Consultar Ficha Cadastrada:</label>
+                    <select id="select-consulta-ficha" onchange="carregarFichaSelecionada()">
+                        <option value="">-- Criar nova ficha ou selecionar existente --</option>
+                    </select>
 
-                <div class="section-title">1 - Dados de Cadastro</div>
-                <label>Nome do Projeto:</label>
-                <input type="text" id="ficha-projeto">
-                <label>N° Projeto:</label>
-                <input type="text" id="ficha-num">
-                <label>Obra:</label>
-                <input type="text" id="ficha-obra">
-                <label>Data Início:</label>
-                <input type="text" id="ficha-datainicio">
-                <label>Status:</label>
-                <input type="text" id="ficha-status">
+                    <div class="section-title">1 - Dados de Cadastro</div>
+                    <label>Nome do Projeto:</label>
+                    <input type="text" id="ficha-projeto">
+                    <label>N° Projeto:</label>
+                    <input type="text" id="ficha-num">
+                    <label>Obra:</label>
+                    <input type="text" id="ficha-obra">
+                    <label>Data Início:</label>
+                    <input type="text" id="ficha-datainicio">
+                    <label>Status:</label>
+                    <input type="text" id="ficha-status">
 
-                <div class="section-title">2 - Envio do Projeto</div>
-                <label>Plataforma Utilizada:</label>
-                <select id="ficha-plataforma">
-                    <option value="">Selecione...</option>
-                    <option value="Construmanager">Construmanager</option>
-                    <option value="Autodoc">Autodoc</option>
-                    <option value="Doxmanager">Doxmanager</option>
-                    <option value="BiXmanager">BiXmanager</option>
-                    <option value="WebProject">WebProject</option>
-                    <option value="Timble Connect">Timble Connect</option>
-                    <option value="E-mail">E-mail</option>
-                    <option value="Outros">Outros</option>
-                </select>
+                    <div class="section-title">2 - Envio do Projeto</div>
+                    <label>Plataforma Utilizada:</label>
+                    <select id="ficha-plataforma">
+                        <option value="">Selecione...</option>
+                        <option value="Construmanager">Construmanager</option>
+                        <option value="Autodoc">Autodoc</option>
+                        <option value="Doxmanager">Doxmanager</option>
+                        <option value="BiXmanager">BiXmanager</option>
+                        <option value="WebProject">WebProject</option>
+                        <option value="Timble Connect">Timble Connect</option>
+                        <option value="E-mail">E-mail</option>
+                        <option value="Outros">Outros</option>
+                    </select>
 
-                <div class="section-title">4 - Observações / E-mails</div>
-                <label>Enviar para:</label>
-                <textarea id="ficha-obs" rows="3"></textarea>
+                    <div class="section-title">4 - Observações / E-mails</div>
+                    <label>Enviar para:</label>
+                    <textarea id="ficha-obs" rows="3"></textarea>
 
-                <button id="btn-salvar-ficha" class="btn btn-dark" onclick="salvarFichaTecnica()">Salvar Ficha do Projeto</button>
+                    <button id="btn-salvar-ficha" class="btn btn-dark" onclick="salvarFichaTecnica()">Salvar Ficha do Projeto</button>
+                </div>
             </div>
         </div>
         
-        <!-- ABA 4: REUNIÕES -->
+        <!-- ABA 4: REUNIÕES (Centralizada) -->
         <div id="tab-reunioes" class="tab-content">
-            <h1>Reuniões</h1>
-            <p class="subtitle">Registro de decisões e atas</p>
-            <div class="form-section">
-                <p>Em breve...</p>
+            <div class="centered-wrapper">
+                <h1>Reuniões</h1>
+                <p class="subtitle">Registro de decisões e atas</p>
+                <div class="form-section">
+                    <p style="text-align: center; color: #666;">Em breve...</p>
+                </div>
             </div>
         </div>
 
@@ -185,7 +190,7 @@
                     lista.innerHTML = ""; 
                     
                     if(!dados.projetos || dados.projetos.length === 0) {
-                        lista.innerHTML = "<p>Nenhum projeto cadastrado.</p>";
+                        lista.innerHTML = "<p style='color: #666;'>Nenhum projeto cadastrado.</p>";
                         contador.innerText = "0 modelos controlados";
                     } else {
                         contador.innerText = dados.projetos.length + " modelos controlados";
@@ -194,7 +199,6 @@
                             let isEmUso = p.status.includes('Em uso');
                             let classeStatus = isEmUso ? 'em-uso' : 'livre';
                             
-                            // Formatação igual à da imagem: Botões alinhados na direita
                             let botoesDevolver = isEmUso ? `
                                 <button class="btn-outline" onclick="devolverProjeto('${p.projeto}', 'CON')">Devolver p/ CON</button>
                                 <button class="btn-outline" onclick="devolverProjeto('${p.projeto}', 'ALV')">Devolver p/ ALV</button>
@@ -204,7 +208,6 @@
                             let modeloInfo = p.modelo && p.modelo !== '-' ? p.modelo : 'S/ Modelo';
                             let faseInfo = p.fase && p.fase !== '-' ? p.fase : 'S/ Fase';
 
-                            // Monta o Card Horizontal
                             lista.innerHTML += `
                             <div class="task-card">
                                 <div class="task-info">
