@@ -8,45 +8,44 @@
         /* BASE DO SISTEMA */
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f5f8; margin: 0; display: flex; height: 100vh; color: #333; overflow: hidden; }
         
-        /* MENU LATERAL (SIDEBAR) ESTILO IMAGEM */
+        /* MENU LATERAL */
         .sidebar { width: 70px; background-color: #2b2d30; display: flex; flex-direction: column; align-items: center; padding-top: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); z-index: 10; }
         .sidebar button { width: 45px; height: 45px; border-radius: 8px; border: none; background: transparent; color: white; margin-bottom: 15px; cursor: pointer; transition: 0.2s; font-size: 20px; display: flex; justify-content: center; align-items: center; }
         .sidebar button:hover { background-color: #3e4145; }
         .sidebar button.active { background-color: #d1e024; color: #2b2d30; } 
         
-        /* ÁREA CENTRAL DO CONTEÚDO */
+        /* ÁREA CENTRAL */
         .main-content { flex: 1; padding: 40px; overflow-y: auto; }
         h1 { font-size: 1.8rem; margin: 0 0 5px 0; color: #222; }
         .subtitle { color: #666; font-size: 0.95rem; margin-bottom: 30px; }
         
-        /* CONTROLE DE ABAS */
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
-        /* ENVOLVIMENTO CENTRALIZADO PARA FORMULÁRIOS */
         .centered-wrapper { max-width: 700px; margin: 0 auto; }
         .centered-wrapper h1, .centered-wrapper .subtitle { text-align: center; }
         
-        /* FORMULÁRIOS ESTILO CLEAN */
+        /* FORMULÁRIOS */
         .form-section { background-color: white; border: 1px solid #e2e8f0; padding: 30px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .section-title { background: #f8f9fa; color: #333; padding: 8px 12px; font-size: 0.85rem; font-weight: bold; border-radius: 4px; border-left: 4px solid #d1e024; margin-bottom: 15px; margin-top: 20px; text-transform: uppercase; }
         label { font-weight: 600; font-size: 0.85rem; margin-top: 15px; display: block; color: #4a5568; text-align: left; }
         input[type="text"], select, textarea { width: 100%; padding: 10px 12px; margin: 5px 0 0 0; border: 1px solid #cbd5e1; border-radius: 5px; box-sizing: border-box; font-family: inherit; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
         input[type="text"]:focus, select:focus, textarea:focus { border-color: #a3b81d; }
         
-        /* CARDS HORIZONTAIS ESTILO TAREFAS */
+        /* CARDS */
         .task-card { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: 0.2s; }
         .task-card:hover { border-color: #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .task-info { display: flex; flex-direction: column; gap: 8px; }
         .task-header { display: flex; align-items: center; gap: 12px; }
-        .task-title { font-size: 1rem; font-weight: bold; color: #1e293b; }
+        .task-title { font-size: 1rem; font-weight: bold; color: #1e293b; display: flex; align-items: center; gap: 10px; }
         .task-details { font-size: 0.85rem; color: #64748b; display: flex; align-items: center; gap: 8px; }
         .task-actions { display: flex; align-items: center; gap: 10px; }
         
-        /* STATUS BADGES */
+        /* BADGES */
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge.em-uso { background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; } 
         .badge.livre { background-color: #d1fae5; color: #047857; border: 1px solid #a7f3d0; } 
+        .badge.alerta-padrao { background-color: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; font-size: 0.7rem; display: inline-block; } 
         
         /* BOTÕES */
         .btn { padding: 10px 16px; border: none; border-radius: 5px; font-size: 0.9rem; cursor: pointer; font-weight: 600; text-align: center; transition: 0.2s; }
@@ -54,12 +53,10 @@
         .btn-dark:hover { background-color: #3e4145; }
         .btn-outline { background-color: white; border: 1px solid #cbd5e1; color: #334155; font-size: 0.85rem; padding: 8px 12px; border-radius: 20px; }
         .btn-outline:hover { background-color: #f8fafc; border-color: #94a3b8; }
-        
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR -->
     <div class="sidebar">
         <button class="active" onclick="mudarAba(event, 'tab-inicio')" title="Projetos">📋</button>
         <button onclick="mudarAba(event, 'tab-movimentar')" title="Check-in">📥</button>
@@ -67,20 +64,16 @@
         <button onclick="mudarAba(event, 'tab-reunioes')" title="Reuniões">🤝</button>
     </div>
 
-    <!-- ÁREA PRINCIPAL -->
     <div class="main-content">
         
-        <!-- ABA 1: PROJETOS (Mantém largura total) -->
+        <!-- ABA 1: PROJETOS -->
         <div id="tab-inicio" class="tab-content active">
             <h1>Modelos - Concreto Armado</h1>
             <p class="subtitle" id="contador-projetos">Carregando status dos modelos...</p>
-            
-            <div id="lista-projetos">
-                <p style="color:#666;">⏳ Conectando ao servidor...</p>
-            </div>
+            <div id="lista-projetos"><p style="color:#666;">⏳ Conectando ao servidor...</p></div>
         </div>
 
-        <!-- ABA 2: CHECK-IN (Centralizada) -->
+        <!-- ABA 2: CHECK-IN -->
         <div id="tab-movimentar" class="tab-content">
             <div class="centered-wrapper">
                 <h1>Fazer Check-in</h1>
@@ -109,7 +102,7 @@
             </div>
         </div>
 
-        <!-- ABA 3: FICHA TÉCNICA (Centralizada) -->
+        <!-- ABA 3: FICHA TÉCNICA -->
         <div id="tab-ficha" class="tab-content">
             <div class="centered-wrapper">
                 <h1>Ficha do Projeto (IPL003)</h1>
@@ -147,6 +140,15 @@
                         <option value="Outros">Outros</option>
                     </select>
 
+                    <div class="section-title">3 - Padrões do Projeto</div>
+                    <label>Padrão de Prancha/Nomenclatura:</label>
+                    <select id="ficha-padrao">
+                        <option value="Padrão Leone">Padrão Leone (Padrão)</option>
+                        <option value="Específico do Cliente">Específico do Cliente</option>
+                    </select>
+                    <label>Link dos Arquivos Base (Carimbo, Manuais):</label>
+                    <input type="text" id="ficha-link" placeholder="Cole o link da pasta do Google Drive/Rede">
+
                     <div class="section-title">4 - Observações / E-mails</div>
                     <label>Enviar para:</label>
                     <textarea id="ficha-obs" rows="3"></textarea>
@@ -156,7 +158,7 @@
             </div>
         </div>
         
-        <!-- ABA 4: REUNIÕES (Centralizada) -->
+        <!-- ABA 4: REUNIÕES -->
         <div id="tab-reunioes" class="tab-content">
             <div class="centered-wrapper">
                 <h1>Reuniões</h1>
@@ -169,7 +171,6 @@
 
     </div>
 
-    <!-- SCRIPT DE LÓGICA (MANTIDO INTACTO) -->
     <script>
         const urlScript = "https://script.google.com/macros/s/AKfycbxzD6GmeW0Zbl-vC4_Q107_guVuxRpI1nqhHsPUXmqfhB8b53CvUEwlzbM6EMIN-uFb/exec";
         let memoriaFichas = [];
@@ -189,6 +190,8 @@
                     const contador = document.getElementById('contador-projetos');
                     lista.innerHTML = ""; 
                     
+                    if(dados.fichas) memoriaFichas = dados.fichas;
+
                     if(!dados.projetos || dados.projetos.length === 0) {
                         lista.innerHTML = "<p style='color: #666;'>Nenhum projeto cadastrado.</p>";
                         contador.innerText = "0 modelos controlados";
@@ -208,11 +211,18 @@
                             let modeloInfo = p.modelo && p.modelo !== '-' ? p.modelo : 'S/ Modelo';
                             let faseInfo = p.fase && p.fase !== '-' ? p.fase : 'S/ Fase';
 
+                            // Verifica se esse projeto tem um padrão específico na Ficha Técnica
+                            let alertaPadrao = '';
+                            let fichaProj = memoriaFichas.find(f => f.projeto === p.projeto);
+                            if(fichaProj && fichaProj.padraoProjeto === 'Específico do Cliente') {
+                                alertaPadrao = `<span class="badge alerta-padrao" title="Verificar link na Ficha Técnica">📌 PADRÃO CLIENTE</span>`;
+                            }
+
                             lista.innerHTML += `
                             <div class="task-card">
                                 <div class="task-info">
                                     <div class="task-header">
-                                        <span class="task-title">${p.projeto}</span>
+                                        <span class="task-title">${p.projeto} ${alertaPadrao}</span>
                                         <span class="badge ${classeStatus}">${p.status.replace('⚠️ ', '').replace('✅ ', '')}</span>
                                     </div>
                                     <div class="task-details">
@@ -226,8 +236,8 @@
                         });
                     }
 
-                    if(dados.fichas) {
-                        memoriaFichas = dados.fichas;
+                    // Preenche o Select das fichas
+                    if(memoriaFichas.length > 0) {
                         const selectFicha = document.getElementById('select-consulta-ficha');
                         selectFicha.innerHTML = '<option value="">-- Criar nova ficha ou selecionar existente --</option>';
                         memoriaFichas.forEach(f => {
@@ -242,6 +252,7 @@
             if(!nomeProj) {
                 document.querySelectorAll('.form-section input[type="text"], .form-section textarea').forEach(el => el.value = '');
                 document.getElementById('ficha-plataforma').value = "";
+                document.getElementById('ficha-padrao').value = "Padrão Leone";
                 return;
             }
             const ficha = memoriaFichas.find(f => f.projeto === nomeProj);
@@ -253,6 +264,8 @@
                 document.getElementById('ficha-status').value = ficha.statusProjeto || "";
                 document.getElementById('ficha-plataforma').value = ficha.plataforma || "";
                 document.getElementById('ficha-obs').value = ficha.observacoes || "";
+                document.getElementById('ficha-padrao').value = ficha.padraoProjeto || "Padrão Leone";
+                document.getElementById('ficha-link').value = ficha.linkArquivos || "";
             }
         }
 
@@ -273,6 +286,8 @@
                     'dataInicio': document.getElementById('ficha-datainicio').value,
                     'statusProjeto': document.getElementById('ficha-status').value,
                     'plataforma': document.getElementById('ficha-plataforma').value,
+                    'padraoProjeto': document.getElementById('ficha-padrao').value,
+                    'linkArquivos': document.getElementById('ficha-link').value,
                     'observacoes': document.getElementById('ficha-obs').value
                 })
             }).then(() => {
