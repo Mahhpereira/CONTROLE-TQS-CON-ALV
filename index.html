@@ -33,14 +33,17 @@
         input[type="text"], select, textarea { width: 100%; padding: 10px 12px; margin: 5px 0 0 0; border: 1px solid #cbd5e1; border-radius: 5px; box-sizing: border-box; font-family: inherit; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
         input[type="text"]:focus, select:focus, textarea:focus { border-color: #a3b81d; }
         
-        /* ESTILO PARA CAMPOS BLOQUEADOS (Somente Leitura) */
         input:disabled, select:disabled, textarea:disabled { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; opacity: 1; }
         
-        /* CARDS */
-        .task-card { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: 0.2s; }
+        /* CARDS DA TELA INICIAL */
+        .task-card { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: 0.2s; border-left: 4px solid transparent; }
         .task-card:hover { border-color: #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        /* DESTAQUE DE ALERTA NO CARD (BORDA VERMELHA) */
+        .task-card.alerta-card { border-left-color: #ef4444; background-color: #fffbfa; }
+        
         .task-info { display: flex; flex-direction: column; gap: 8px; }
-        .task-header { display: flex; align-items: center; gap: 12px; }
+        .task-header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .task-title { font-size: 1rem; font-weight: bold; color: #1e293b; display: flex; align-items: center; gap: 10px; }
         .task-details { font-size: 0.85rem; color: #64748b; display: flex; align-items: center; gap: 8px; }
         .task-actions { display: flex; align-items: center; gap: 10px; }
@@ -49,9 +52,11 @@
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge.em-uso { background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; } 
         .badge.livre { background-color: #d1fae5; color: #047857; border: 1px solid #a7f3d0; } 
-        .badge.alerta-padrao { background-color: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; font-size: 0.7rem; display: inline-block; } 
         
-        /* BANNER DE ALERTA NO TOPO DA FICHA */
+        /* ETIQUETA DE ALERTA NO CARD (TELA INICIAL) */
+        .badge.alerta-padrao { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; } 
+        
+        /* BANNER DE ALERTA NA FICHA TÉCNICA */
         #banner-alerta-padrao { display: none; background-color: #fef2f2; border-left: 5px solid #ef4444; color: #991b1b; padding: 15px; border-radius: 4px; margin-top: 20px; font-size: 0.95rem; }
         
         /* BOTÕES */
@@ -125,7 +130,6 @@
                         <option value="">-- Criar nova ficha ou selecionar existente --</option>
                     </select>
 
-                    <!-- BANNER DE ALERTA NOVO -->
                     <div id="banner-alerta-padrao">
                         ⚠️ <strong>ATENÇÃO:</strong> Este projeto utiliza um <strong>Padrão Específico do Cliente</strong>.<br> Consulte a Seção 3 abaixo para acessar os arquivos base e o manual de nomenclatura.
                     </div>
@@ -234,17 +238,21 @@
                             let modeloInfo = p.modelo && p.modelo !== '-' ? p.modelo : 'S/ Modelo';
                             let faseInfo = p.fase && p.fase !== '-' ? p.fase : 'S/ Fase';
 
+                            // Lógica de alerta para a tela inicial
                             let alertaPadrao = '';
+                            let cardClass = 'task-card'; // Classe padrão do card
                             let nomeProjetoLimpo = p.projeto.trim().toLowerCase();
                             
                             let fichaProj = memoriaFichas.find(f => f.projeto && f.projeto.trim().toLowerCase() === nomeProjetoLimpo);
                             
+                            // Se encontrar o padrão específico, aplica a etiqueta e a borda vermelha
                             if(fichaProj && fichaProj.padraoProjeto && fichaProj.padraoProjeto.includes('Específico')) {
-                                alertaPadrao = `<span class="badge alerta-padrao" title="Verificar link na Ficha Técnica">📌 PADRÃO CLIENTE</span>`;
+                                alertaPadrao = `<span class="badge alerta-padrao" title="Verificar Padrão na Ficha Técnica">🚨 PADRÃO CLIENTE</span>`;
+                                cardClass += ' alerta-card'; 
                             }
 
                             lista.innerHTML += `
-                            <div class="task-card">
+                            <div class="${cardClass}">
                                 <div class="task-info">
                                     <div class="task-header">
                                         <span class="task-title">${p.projeto} ${alertaPadrao}</span>
@@ -286,7 +294,6 @@
             const bannerAlerta = document.getElementById('banner-alerta-padrao');
 
             if(!nomeProj) {
-                // CRIAR NOVA FICHA
                 document.getElementById('ficha-projeto').value = '';
                 document.getElementById('ficha-num').value = '';
                 document.getElementById('ficha-obra').value = '';
@@ -298,14 +305,13 @@
                 document.getElementById('ficha-plataforma').value = "";
                 document.getElementById('ficha-padrao').value = "Padrão Leone";
                 
-                bannerAlerta.style.display = "none"; // Esconde o banner
+                bannerAlerta.style.display = "none";
                 alternarCamposFicha(false);
                 btnSalvar.style.display = "block";
                 btnEditar.style.display = "none";
                 return;
             }
             
-            // CONSULTAR FICHA EXISTENTE
             const ficha = memoriaFichas.find(f => f.projeto === nomeProj);
             if(ficha) {
                 document.getElementById('ficha-projeto').value = ficha.projeto || "";
@@ -318,7 +324,6 @@
                 document.getElementById('ficha-link').value = ficha.linkArquivos || "";
                 document.getElementById('ficha-obs').value = ficha.observacoes || "";
                 
-                // Exibe o banner de alerta no topo se o padrão for do cliente
                 if(ficha.padraoProjeto && ficha.padraoProjeto.includes('Específico')) {
                     bannerAlerta.style.display = "block";
                 } else {
