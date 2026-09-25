@@ -209,6 +209,12 @@
             }
         }
 
+        // Função auxiliar para padronizar textos (remove acentos e deixa minúsculo)
+        function normalizarTexto(texto) {
+            if (!texto) return "";
+            return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+        }
+
         window.onload = function() {
             fetch(urlScript)
                 .then(resposta => resposta.json())
@@ -238,14 +244,19 @@
                             let modeloInfo = p.modelo && p.modelo !== '-' ? p.modelo : 'S/ Modelo';
                             let faseInfo = p.fase && p.fase !== '-' ? p.fase : 'S/ Fase';
 
-                            // Lógica de alerta para a tela inicial
+                            // Lógica de alerta com BUSCA INTELIGENTE
                             let alertaPadrao = '';
-                            let cardClass = 'task-card'; // Classe padrão do card
-                            let nomeProjetoLimpo = p.projeto.trim().toLowerCase();
+                            let cardClass = 'task-card';
                             
-                            let fichaProj = memoriaFichas.find(f => f.projeto && f.projeto.trim().toLowerCase() === nomeProjetoLimpo);
+                            let nomeLimpoProj = normalizarTexto(p.projeto);
                             
-                            // Se encontrar o padrão específico, aplica a etiqueta e a borda vermelha
+                            let fichaProj = memoriaFichas.find(f => {
+                                if(!f.projeto) return false;
+                                let nomeLimpoFicha = normalizarTexto(f.projeto);
+                                // Verifica se um nome está contido no outro ("paula ney" dentro de "rua paula ney")
+                                return nomeLimpoProj.includes(nomeLimpoFicha) || nomeLimpoFicha.includes(nomeLimpoProj);
+                            });
+                            
                             if(fichaProj && fichaProj.padraoProjeto && fichaProj.padraoProjeto.includes('Específico')) {
                                 alertaPadrao = `<span class="badge alerta-padrao" title="Verificar Padrão na Ficha Técnica">🚨 PADRÃO CLIENTE</span>`;
                                 cardClass += ' alerta-card'; 
