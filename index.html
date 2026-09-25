@@ -51,6 +51,9 @@
         .badge.livre { background-color: #d1fae5; color: #047857; border: 1px solid #a7f3d0; } 
         .badge.alerta-padrao { background-color: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; font-size: 0.7rem; display: inline-block; } 
         
+        /* BANNER DE ALERTA NO TOPO DA FICHA */
+        #banner-alerta-padrao { display: none; background-color: #fef2f2; border-left: 5px solid #ef4444; color: #991b1b; padding: 15px; border-radius: 4px; margin-top: 20px; font-size: 0.95rem; }
+        
         /* BOTÕES */
         .btn { padding: 10px 16px; border: none; border-radius: 5px; font-size: 0.9rem; cursor: pointer; font-weight: 600; text-align: center; transition: 0.2s; display: block; box-sizing: border-box;}
         .btn-dark { background-color: #2b2d30; color: white; width: 100%; }
@@ -122,6 +125,11 @@
                         <option value="">-- Criar nova ficha ou selecionar existente --</option>
                     </select>
 
+                    <!-- BANNER DE ALERTA NOVO -->
+                    <div id="banner-alerta-padrao">
+                        ⚠️ <strong>ATENÇÃO:</strong> Este projeto utiliza um <strong>Padrão Específico do Cliente</strong>.<br> Consulte a Seção 3 abaixo para acessar os arquivos base e o manual de nomenclatura.
+                    </div>
+
                     <div class="section-title">1 - Dados de Cadastro</div>
                     <label>Nome do Projeto:</label>
                     <input type="text" id="ficha-projeto">
@@ -162,9 +170,7 @@
                     <textarea id="ficha-obs" rows="3"></textarea>
 
                     <div class="botoes-ficha">
-                        <!-- Botão de Editar (Começa escondido) -->
                         <button id="btn-editar-ficha" class="btn btn-outline" style="display:none; width: 100%; border-color: #2b2d30; color: #2b2d30;" onclick="habilitarEdicaoFicha()">✏️ Editar Ficha</button>
-                        <!-- Botão de Salvar -->
                         <button id="btn-salvar-ficha" class="btn btn-dark" onclick="salvarFichaTecnica()">Salvar Ficha do Projeto</button>
                     </div>
                 </div>
@@ -194,7 +200,6 @@
             document.getElementById(idAba).classList.add('active');
             evento.currentTarget.classList.add('active');
             
-            // Reseta a ficha técnica se abrir a aba e não tiver nada selecionado
             if(idAba === 'tab-ficha' && !document.getElementById('select-consulta-ficha').value) {
                  carregarFichaSelecionada();
             }
@@ -266,7 +271,6 @@
                 });
         };
 
-        // Função para travar/destravar os campos da Ficha
         function alternarCamposFicha(bloquear) {
             const campos = ['ficha-projeto', 'ficha-num', 'ficha-obra', 'ficha-datainicio', 'ficha-status', 'ficha-plataforma', 'ficha-padrao', 'ficha-link', 'ficha-obs'];
             campos.forEach(id => {
@@ -279,9 +283,10 @@
             const nomeProj = document.getElementById('select-consulta-ficha').value;
             const btnSalvar = document.getElementById('btn-salvar-ficha');
             const btnEditar = document.getElementById('btn-editar-ficha');
+            const bannerAlerta = document.getElementById('banner-alerta-padrao');
 
             if(!nomeProj) {
-                // MODO CRIAR NOVA (Tudo limpo e destravado)
+                // CRIAR NOVA FICHA
                 document.getElementById('ficha-projeto').value = '';
                 document.getElementById('ficha-num').value = '';
                 document.getElementById('ficha-obra').value = '';
@@ -293,13 +298,14 @@
                 document.getElementById('ficha-plataforma').value = "";
                 document.getElementById('ficha-padrao').value = "Padrão Leone";
                 
+                bannerAlerta.style.display = "none"; // Esconde o banner
                 alternarCamposFicha(false);
                 btnSalvar.style.display = "block";
                 btnEditar.style.display = "none";
                 return;
             }
             
-            // MODO CONSULTA (Preenche e trava)
+            // CONSULTAR FICHA EXISTENTE
             const ficha = memoriaFichas.find(f => f.projeto === nomeProj);
             if(ficha) {
                 document.getElementById('ficha-projeto').value = ficha.projeto || "";
@@ -312,17 +318,22 @@
                 document.getElementById('ficha-link').value = ficha.linkArquivos || "";
                 document.getElementById('ficha-obs').value = ficha.observacoes || "";
                 
-                alternarCamposFicha(true); // Trava os campos
-                btnSalvar.style.display = "none"; // Esconde botão salvar
-                btnEditar.style.display = "block"; // Mostra botão de editar
+                // Exibe o banner de alerta no topo se o padrão for do cliente
+                if(ficha.padraoProjeto && ficha.padraoProjeto.includes('Específico')) {
+                    bannerAlerta.style.display = "block";
+                } else {
+                    bannerAlerta.style.display = "none";
+                }
+
+                alternarCamposFicha(true); 
+                btnSalvar.style.display = "none"; 
+                btnEditar.style.display = "block"; 
             }
         }
 
         function habilitarEdicaoFicha() {
             alternarCamposFicha(false);
-            // Trava só o Nome do Projeto, para não quebrar a ligação com a planilha
             document.getElementById('ficha-projeto').disabled = true; 
-            
             document.getElementById('btn-salvar-ficha').style.display = "block";
             document.getElementById('btn-editar-ficha').style.display = "none";
         }
