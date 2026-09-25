@@ -29,8 +29,12 @@
         .form-section { background-color: white; border: 1px solid #e2e8f0; padding: 30px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .section-title { background: #f8f9fa; color: #333; padding: 8px 12px; font-size: 0.85rem; font-weight: bold; border-radius: 4px; border-left: 4px solid #d1e024; margin-bottom: 15px; margin-top: 20px; text-transform: uppercase; }
         label { font-weight: 600; font-size: 0.85rem; margin-top: 15px; display: block; color: #4a5568; text-align: left; }
+        
         input[type="text"], select, textarea { width: 100%; padding: 10px 12px; margin: 5px 0 0 0; border: 1px solid #cbd5e1; border-radius: 5px; box-sizing: border-box; font-family: inherit; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
         input[type="text"]:focus, select:focus, textarea:focus { border-color: #a3b81d; }
+        
+        /* ESTILO PARA CAMPOS BLOQUEADOS (Somente Leitura) */
+        input:disabled, select:disabled, textarea:disabled { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; opacity: 1; }
         
         /* CARDS */
         .task-card { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: 0.2s; }
@@ -48,11 +52,13 @@
         .badge.alerta-padrao { background-color: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; font-size: 0.7rem; display: inline-block; } 
         
         /* BOTÕES */
-        .btn { padding: 10px 16px; border: none; border-radius: 5px; font-size: 0.9rem; cursor: pointer; font-weight: 600; text-align: center; transition: 0.2s; }
-        .btn-dark { background-color: #2b2d30; color: white; margin-top: 25px; width: 100%; }
+        .btn { padding: 10px 16px; border: none; border-radius: 5px; font-size: 0.9rem; cursor: pointer; font-weight: 600; text-align: center; transition: 0.2s; display: block; box-sizing: border-box;}
+        .btn-dark { background-color: #2b2d30; color: white; width: 100%; }
         .btn-dark:hover { background-color: #3e4145; }
         .btn-outline { background-color: white; border: 1px solid #cbd5e1; color: #334155; font-size: 0.85rem; padding: 8px 12px; border-radius: 20px; }
         .btn-outline:hover { background-color: #f8fafc; border-color: #94a3b8; }
+        
+        .botoes-ficha { display: flex; gap: 10px; margin-top: 25px; width: 100%;}
     </style>
 </head>
 <body>
@@ -97,7 +103,9 @@
                     <input type="text" id="versaoProjeto" placeholder="Ex: R01">
                     <label>Responsável:</label>
                     <input type="text" id="responsavelProjeto" placeholder="Seu nome">
-                    <button id="btn-cadastrar" class="btn btn-dark" onclick="cadastrarProjeto()">Registrar Check-in</button>
+                    <div class="botoes-ficha">
+                        <button id="btn-cadastrar" class="btn btn-dark" onclick="cadastrarProjeto()">Registrar Check-in</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -153,7 +161,12 @@
                     <label>Enviar para:</label>
                     <textarea id="ficha-obs" rows="3"></textarea>
 
-                    <button id="btn-salvar-ficha" class="btn btn-dark" onclick="salvarFichaTecnica()">Salvar Ficha do Projeto</button>
+                    <div class="botoes-ficha">
+                        <!-- Botão de Editar (Começa escondido) -->
+                        <button id="btn-editar-ficha" class="btn btn-outline" style="display:none; width: 100%; border-color: #2b2d30; color: #2b2d30;" onclick="habilitarEdicaoFicha()">✏️ Editar Ficha</button>
+                        <!-- Botão de Salvar -->
+                        <button id="btn-salvar-ficha" class="btn btn-dark" onclick="salvarFichaTecnica()">Salvar Ficha do Projeto</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -180,6 +193,11 @@
             document.querySelectorAll('.sidebar button').forEach(btn => btn.classList.remove('active'));
             document.getElementById(idAba).classList.add('active');
             evento.currentTarget.classList.add('active');
+            
+            // Reseta a ficha técnica se abrir a aba e não tiver nada selecionado
+            if(idAba === 'tab-ficha' && !document.getElementById('select-consulta-ficha').value) {
+                 carregarFichaSelecionada();
+            }
         }
 
         window.onload = function() {
@@ -211,10 +229,12 @@
                             let modeloInfo = p.modelo && p.modelo !== '-' ? p.modelo : 'S/ Modelo';
                             let faseInfo = p.fase && p.fase !== '-' ? p.fase : 'S/ Fase';
 
-                            // Verifica se esse projeto tem um padrão específico na Ficha Técnica
                             let alertaPadrao = '';
-                            let fichaProj = memoriaFichas.find(f => f.projeto === p.projeto);
-                            if(fichaProj && fichaProj.padraoProjeto === 'Específico do Cliente') {
+                            let nomeProjetoLimpo = p.projeto.trim().toLowerCase();
+                            
+                            let fichaProj = memoriaFichas.find(f => f.projeto && f.projeto.trim().toLowerCase() === nomeProjetoLimpo);
+                            
+                            if(fichaProj && fichaProj.padraoProjeto && fichaProj.padraoProjeto.includes('Específico')) {
                                 alertaPadrao = `<span class="badge alerta-padrao" title="Verificar link na Ficha Técnica">📌 PADRÃO CLIENTE</span>`;
                             }
 
@@ -236,7 +256,6 @@
                         });
                     }
 
-                    // Preenche o Select das fichas
                     if(memoriaFichas.length > 0) {
                         const selectFicha = document.getElementById('select-consulta-ficha');
                         selectFicha.innerHTML = '<option value="">-- Criar nova ficha ou selecionar existente --</option>';
@@ -247,14 +266,40 @@
                 });
         };
 
+        // Função para travar/destravar os campos da Ficha
+        function alternarCamposFicha(bloquear) {
+            const campos = ['ficha-projeto', 'ficha-num', 'ficha-obra', 'ficha-datainicio', 'ficha-status', 'ficha-plataforma', 'ficha-padrao', 'ficha-link', 'ficha-obs'];
+            campos.forEach(id => {
+                let el = document.getElementById(id);
+                if(el) el.disabled = bloquear;
+            });
+        }
+
         function carregarFichaSelecionada() {
             const nomeProj = document.getElementById('select-consulta-ficha').value;
+            const btnSalvar = document.getElementById('btn-salvar-ficha');
+            const btnEditar = document.getElementById('btn-editar-ficha');
+
             if(!nomeProj) {
-                document.querySelectorAll('.form-section input[type="text"], .form-section textarea').forEach(el => el.value = '');
+                // MODO CRIAR NOVA (Tudo limpo e destravado)
+                document.getElementById('ficha-projeto').value = '';
+                document.getElementById('ficha-num').value = '';
+                document.getElementById('ficha-obra').value = '';
+                document.getElementById('ficha-datainicio').value = '';
+                document.getElementById('ficha-status').value = '';
+                document.getElementById('ficha-link').value = '';
+                document.getElementById('ficha-obs').value = '';
+                
                 document.getElementById('ficha-plataforma').value = "";
                 document.getElementById('ficha-padrao').value = "Padrão Leone";
+                
+                alternarCamposFicha(false);
+                btnSalvar.style.display = "block";
+                btnEditar.style.display = "none";
                 return;
             }
+            
+            // MODO CONSULTA (Preenche e trava)
             const ficha = memoriaFichas.find(f => f.projeto === nomeProj);
             if(ficha) {
                 document.getElementById('ficha-projeto').value = ficha.projeto || "";
@@ -263,10 +308,23 @@
                 document.getElementById('ficha-datainicio').value = ficha.dataInicio || "";
                 document.getElementById('ficha-status').value = ficha.statusProjeto || "";
                 document.getElementById('ficha-plataforma').value = ficha.plataforma || "";
-                document.getElementById('ficha-obs').value = ficha.observacoes || "";
                 document.getElementById('ficha-padrao').value = ficha.padraoProjeto || "Padrão Leone";
                 document.getElementById('ficha-link').value = ficha.linkArquivos || "";
+                document.getElementById('ficha-obs').value = ficha.observacoes || "";
+                
+                alternarCamposFicha(true); // Trava os campos
+                btnSalvar.style.display = "none"; // Esconde botão salvar
+                btnEditar.style.display = "block"; // Mostra botão de editar
             }
+        }
+
+        function habilitarEdicaoFicha() {
+            alternarCamposFicha(false);
+            // Trava só o Nome do Projeto, para não quebrar a ligação com a planilha
+            document.getElementById('ficha-projeto').disabled = true; 
+            
+            document.getElementById('btn-salvar-ficha').style.display = "block";
+            document.getElementById('btn-editar-ficha').style.display = "none";
         }
 
         function salvarFichaTecnica() {
