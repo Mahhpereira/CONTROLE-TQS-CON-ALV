@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -82,16 +82,16 @@
         
         <!-- ABA 1: PROJETOS -->
         <div id="tab-inicio" class="tab-content active">
-            <h1>Modelos - Concreto Armado</h1>
-            <p class="subtitle" id="contador-projetos">Carregando status dos modelos...</p>
-            <div id="lista-projetos"><p style="color:#666;">⏳ Conectando ao servidor...</p></div>
+            <h1>Projetos</h1>
+            <p class="subtitle" id="contador-projetos">A carregar o estado dos projetos...</p>
+            <div id="lista-projetos"><p style="color:#666;">⏳ A ligar ao servidor...</p></div>
         </div>
 
         <!-- ABA 2: CHECK-IN -->
         <div id="tab-movimentar" class="tab-content">
             <div class="centered-wrapper">
                 <h1>Fazer Check-in</h1>
-                <p class="subtitle">Registre a entrada de um projeto para o seu C:\TQS</p>
+                <p class="subtitle">Registe a entrada de um projeto para o seu C:\TQS</p>
                 
                 <div class="form-section">
                     <label>Projeto:</label>
@@ -110,9 +110,9 @@
                     <label>Versão:</label>
                     <input type="text" id="versaoProjeto" placeholder="Ex: R01">
                     <label>Responsável:</label>
-                    <input type="text" id="responsavelProjeto" placeholder="Seu nome">
+                    <input type="text" id="responsavelProjeto" placeholder="O seu nome">
                     <div class="botoes-ficha">
-                        <button id="btn-cadastrar" class="btn btn-dark" onclick="cadastrarProjeto()">Registrar Check-in</button>
+                        <button id="btn-cadastrar" class="btn btn-dark" onclick="cadastrarProjeto()">Registar Check-in</button>
                     </div>
                 </div>
             </div>
@@ -131,7 +131,7 @@
                     </select>
 
                     <div id="banner-alerta-padrao">
-                        ⚠️ <strong>ATENÇÃO:</strong> Este projeto utiliza um <strong>Padrão Específico do Cliente</strong>.<br> Consulte a Seção 3 abaixo para acessar os arquivos base e o manual de nomenclatura.
+                        ⚠️ <strong>ATENÇÃO:</strong> Este projeto utiliza um <strong>Padrão Específico do Cliente</strong>.<br> Consulte a Secção 3 abaixo para aceder aos arquivos base e ao manual de nomenclatura.
                     </div>
 
                     <div class="section-title">1 - Dados de Cadastro</div>
@@ -141,9 +141,9 @@
                     <input type="text" id="ficha-num">
                     <label>Obra:</label>
                     <input type="text" id="ficha-obra">
-                    <label>Data Início:</label>
+                    <label>Data de Início:</label>
                     <input type="text" id="ficha-datainicio">
-                    <label>Status:</label>
+                    <label>Estado:</label>
                     <input type="text" id="ficha-status">
 
                     <div class="section-title">2 - Envio do Projeto</div>
@@ -185,7 +185,7 @@
         <div id="tab-reunioes" class="tab-content">
             <div class="centered-wrapper">
                 <h1>Reuniões</h1>
-                <p class="subtitle">Registro de decisões e atas</p>
+                <p class="subtitle">Registo de decisões e atas</p>
                 <div class="form-section">
                     <p style="text-align: center; color: #666;">Em breve...</p>
                 </div>
@@ -227,9 +227,9 @@
 
                     if(!dados.projetos || dados.projetos.length === 0) {
                         lista.innerHTML = "<p style='color: #666;'>Nenhum projeto cadastrado.</p>";
-                        contador.innerText = "0 modelos controlados";
+                        contador.innerText = "0 projetos controlados";
                     } else {
-                        contador.innerText = dados.projetos.length + " modelos controlados";
+                        contador.innerText = dados.projetos.length + " projetos controlados";
                         
                         dados.projetos.reverse().forEach(p => { 
                             let isEmUso = p.status.includes('Em uso');
@@ -358,7 +358,7 @@
             var projeto = document.getElementById('ficha-projeto').value;
             if(!projeto.trim()) { alert("O Nome do Projeto é obrigatório!"); return; }
             var btn = document.getElementById('btn-salvar-ficha');
-            btn.innerText = "Salvando..."; btn.disabled = true;
+            btn.innerText = "A salvar..."; btn.disabled = true;
 
             fetch(urlScript, {
                 method: 'POST', mode: 'no-cors',
@@ -385,7 +385,7 @@
         function cadastrarProjeto() {
             var nome = document.getElementById('nomeProjeto').value;
             var btn = document.getElementById('btn-cadastrar');
-            btn.innerText = "Salvando..."; btn.disabled = true;
+            btn.innerText = "A salvar..."; btn.disabled = true;
             fetch(urlScript, {
                 method: 'POST', mode: 'no-cors',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -401,7 +401,7 @@
         }
 
         function devolverProjeto(nomeProjeto, destino) {
-            if(!confirm(`Confirma devolução de "${nomeProjeto}" para o TQS ${destino}?`)) return; 
+            if(!confirm(`Confirma a devolução de "${nomeProjeto}" para o TQS ${destino}?`)) return; 
             fetch(urlScript, {
                 method: 'POST', mode: 'no-cors',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
