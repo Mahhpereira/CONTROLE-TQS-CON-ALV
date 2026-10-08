@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,7 +49,6 @@
         /* CARDS DA TELA INICIAL */
         .task-card { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: 0.2s; border-left: 4px solid transparent; }
         .task-card:hover { border-color: #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        
         .task-card.alerta-card { border-left-color: #ef4444; background-color: #fffbfa; }
         
         .task-info { display: flex; flex-direction: column; gap: 8px; }
@@ -63,6 +62,7 @@
         .badge.em-uso { background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; } 
         .badge.livre { background-color: #d1fae5; color: #047857; border: 1px solid #a7f3d0; } 
         .badge.alerta-padrao { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; } 
+        .badge.alerta-validacao { background-color: #fef08a; color: #854d0e; border: 1px solid #fde047; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; }
         
         /* BANNER DE ALERTA NA FICHA TÉCNICA */
         #banner-alerta-padrao { display: none; background-color: #fef2f2; border-left: 5px solid #ef4444; color: #991b1b; padding: 15px; border-radius: 4px; margin-top: 20px; font-size: 0.95rem; }
@@ -75,6 +75,10 @@
         .btn-outline:hover { background-color: #f8fafc; border-color: #94a3b8; }
         
         .botoes-ficha { display: flex; gap: 10px; margin-top: 25px; width: 100%;}
+
+        /* MODAL DE DEVOLUÇÃO */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 450px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
     </style>
 </head>
 <body>
@@ -83,7 +87,7 @@
         <button class="active" onclick="mudarAba(event, 'tab-inicio')" title="Projetos">📋</button>
         <button onclick="mudarAba(event, 'tab-movimentar')" title="Check-in">📥</button>
         <button onclick="mudarAba(event, 'tab-ficha')" title="Ficha Técnica">📄</button>
-        <button onclick="mudarAba(event, 'tab-reunioes')" title="Reuniões">🤝</button>
+        <button onclick="mudarAba(event, 'tab-diario')" title="Diário de Bordo">📓</button>
     </div>
 
     <div class="main-content">
@@ -91,9 +95,8 @@
         <!-- ABA 1: PROJETOS -->
         <div id="tab-inicio" class="tab-content active">
             <h1>Projetos</h1>
-            <p class="subtitle" id="contador-projetos">A carregar o estado dos projetos...</p>
+            <p class="subtitle" id="contador-projetos">Carregando o status dos projetos...</p>
             
-            <!-- GUIA RÁPIDO VISUAL -->
             <div class="guia-rapido">
                 <h3>💡 Como usar o sistema:</h3>
                 <div class="guia-passos">
@@ -103,14 +106,14 @@
                 </div>
             </div>
 
-            <div id="lista-projetos"><p style="color:#666;">⏳ A ligar ao servidor...</p></div>
+            <div id="lista-projetos"><p style="color:#666;">⏳ Conectando ao servidor...</p></div>
         </div>
 
         <!-- ABA 2: CHECK-IN -->
         <div id="tab-movimentar" class="tab-content">
             <div class="centered-wrapper">
                 <h1>Fazer Check-in</h1>
-                <p class="subtitle">Registe a entrada de um projeto para o seu C:\TQS</p>
+                <p class="subtitle">Registre a entrada de um projeto para o seu C:\TQS</p>
                 
                 <div class="form-section">
                     <label>Projeto: <span class="tooltip-icon" title="Digite o nome do empreendimento exatamente como está na Ficha Técnica">ℹ️</span></label>
@@ -132,11 +135,11 @@
                     <label>Versão:</label>
                     <input type="text" id="versaoProjeto" placeholder="Ex: R01">
                     
-                    <label>Responsável: <span class="tooltip-icon" title="O seu nome. O modelo ficará bloqueado para si até que seja devolvido.">ℹ️</span></label>
-                    <input type="text" id="responsavelProjeto" placeholder="O seu nome">
+                    <label>Responsável: <span class="tooltip-icon" title="O seu nome. O modelo ficará bloqueado para você até que seja devolvido.">ℹ️</span></label>
+                    <input type="text" id="responsavelProjeto" placeholder="Seu nome">
                     
                     <div class="botoes-ficha">
-                        <button id="btn-cadastrar" class="btn btn-dark" onclick="cadastrarProjeto()">Registar Check-in</button>
+                        <button id="btn-cadastrar" class="btn btn-dark" onclick="cadastrarProjeto()">Registrar Check-in</button>
                     </div>
                 </div>
             </div>
@@ -155,7 +158,7 @@
                     </select>
 
                     <div id="banner-alerta-padrao">
-                        ⚠️ <strong>ATENÇÃO:</strong> Este projeto utiliza um <strong>Padrão Específico do Cliente</strong>.<br> Consulte a Secção 3 abaixo para aceder aos arquivos base e ao manual de nomenclatura.
+                        ⚠️ <strong>ATENÇÃO:</strong> Este projeto utiliza um <strong>Padrão Específico do Cliente</strong>.<br> Consulte a Seção 3 abaixo para acessar os arquivos base e o manual de nomenclatura.
                     </div>
 
                     <div class="section-title">1 - Dados de Cadastro</div>
@@ -167,7 +170,7 @@
                     <input type="text" id="ficha-obra">
                     <label>Data de Início:</label>
                     <input type="text" id="ficha-datainicio">
-                    <label>Estado:</label>
+                    <label>Status:</label>
                     <input type="text" id="ficha-status">
 
                     <div class="section-title">2 - Envio do Projeto</div>
@@ -205,22 +208,56 @@
             </div>
         </div>
         
-        <!-- ABA 4: REUNIÕES -->
-        <div id="tab-reunioes" class="tab-content">
+        <!-- ABA 4: DIÁRIO DE BORDO -->
+        <div id="tab-diario" class="tab-content">
             <div class="centered-wrapper">
-                <h1>Reuniões</h1>
-                <p class="subtitle">Registo de decisões e atas</p>
-                <div class="form-section">
-                    <p style="text-align: center; color: #666;">Em breve...</p>
+                <h1>Diário de Bordo</h1>
+                <p class="subtitle">Histórico de recados, pendências e atualizações dos modelos</p>
+                
+                <div class="form-section" style="background-color: #f8fafc;">
+                    <p style="text-align: center; color: #64748b; font-size: 0.95rem;">
+                        <strong>🚧 Aba em construção!</strong><br><br>
+                        A interface do Diário já está pronta. No próximo passo, vamos configurar a sua planilha no Google para conseguir salvar e listar os recados deixados pela equipe.
+                    </p>
                 </div>
             </div>
         </div>
 
     </div>
 
+    <!-- MODAL DE DEVOLUÇÃO -->
+    <div id="modalDevolucao" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="margin-top:0; font-size:1.4rem; color:#1e293b;">Devolver Projeto</h2>
+            <p style="color:#64748b; font-size:0.9rem; margin-bottom: 20px;">Atualize o status do modelo <strong id="modal-nome-proj" style="color:#0369a1;"></strong> para disponibilizá-lo para a equipe.</p>
+            
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                <label style="display: flex; align-items: flex-start; gap: 10px; margin-top: 0; cursor: pointer;">
+                    <input type="checkbox" id="check-validacao" style="width: 18px; height: 18px; margin-top: 2px;">
+                    <div>
+                        <span style="font-weight: bold; color: #b45309;">⏳ Aguardando Validação</span>
+                        <p style="font-size: 0.8rem; color: #64748b; margin: 4px 0 0 0; font-weight: normal;">Marque se o modelo foi finalizado, mas o coordenador ainda precisa revisar antes do envio ao cliente.</p>
+                    </div>
+                </label>
+            </div>
+
+            <label>Recado para o Diário de Bordo (Opcional):</label>
+            <textarea id="texto-recado" rows="3" placeholder="Ex: Ajustei as vigas de transição, mas a laje do térreo ainda precisa que o coordenador valide a punção." disabled title="O salvamento de recados será ativado no próximo passo da planilha!"></textarea>
+
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button class="btn btn-outline" style="flex: 1;" onclick="fecharModal()">Cancelar</button>
+                <button id="btn-confirmar-devolucao" class="btn btn-dark" style="flex: 1;" onclick="confirmarDevolucao()">Confirmar Devolução</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const urlScript = "https://script.google.com/macros/s/AKfycbxzD6GmeW0Zbl-vC4_Q107_guVuxRpI1nqhHsPUXmqfhB8b53CvUEwlzbM6EMIN-uFb/exec";
         let memoriaFichas = [];
+        
+        // Variáveis globais para o Modal de Devolução
+        let projDevolucaoAtual = "";
+        let destinoDevolucaoAtual = "";
 
         function mudarAba(evento, idAba) {
             document.querySelectorAll('.tab-content').forEach(aba => aba.classList.remove('active'));
@@ -259,17 +296,27 @@
                             let classeStatus = isEmUso ? 'em-uso' : 'livre';
                             
                             let botoesDevolver = isEmUso ? `
-                                <button class="btn-outline" onclick="devolverProjeto('${p.projeto}', 'CON')">Devolver p/ CON</button>
-                                <button class="btn-outline" onclick="devolverProjeto('${p.projeto}', 'ALV')">Devolver p/ ALV</button>
+                                <button class="btn-outline" onclick="abrirModalDevolucao('${p.projeto}', 'CON')">Devolver p/ CON</button>
+                                <button class="btn-outline" onclick="abrirModalDevolucao('${p.projeto}', 'ALV')">Devolver p/ ALV</button>
                             ` : '';
 
                             let infoResponsavel = isEmUso ? ` • 👤 ${p.responsavel}` : '';
                             let modeloInfo = p.modelo && p.modelo !== '-' ? p.modelo : 'S/ Modelo';
                             let faseInfo = p.fase && p.fase !== '-' ? p.fase : 'S/ Fase';
 
+                            // LÓGICA DE STATUS "AGUARDANDO VALIDAÇÃO"
+                            let badgeValidacao = '';
+                            let textoStatusLimpo = p.status;
+                            
+                            if (textoStatusLimpo.includes('Aguardando Validação')) {
+                                badgeValidacao = `<span class="badge alerta-validacao" title="O coordenador precisa revisar este modelo">⏳ AGUARDANDO VALIDAÇÃO</span>`;
+                                textoStatusLimpo = textoStatusLimpo.replace(' - Aguardando Validação', ''); // Remove o sufixo para exibir só o status base
+                            }
+                            textoStatusLimpo = textoStatusLimpo.replace('⚠️ ', '').replace('✅ ', '');
+
+                            // LÓGICA DE ALERTA "PADRÃO CLIENTE"
                             let alertaPadrao = '';
                             let cardClass = 'task-card';
-                            
                             let nomeLimpoProj = normalizarTexto(p.projeto);
                             
                             let fichaProj = memoriaFichas.find(f => {
@@ -288,7 +335,8 @@
                                 <div class="task-info">
                                     <div class="task-header">
                                         <span class="task-title">${p.projeto} ${alertaPadrao}</span>
-                                        <span class="badge ${classeStatus}">${p.status.replace('⚠️ ', '').replace('✅ ', '')}</span>
+                                        <span class="badge ${classeStatus}">${textoStatusLimpo}</span>
+                                        ${badgeValidacao}
                                     </div>
                                     <div class="task-details">
                                         ${modeloInfo} • ${faseInfo} • ${p.versao || '-'}${infoResponsavel}
@@ -310,6 +358,46 @@
                     }
                 });
         };
+
+        // --- FUNÇÕES DO MODAL DE DEVOLUÇÃO ---
+        function abrirModalDevolucao(nomeProjeto, destino) {
+            projDevolucaoAtual = nomeProjeto;
+            destinoDevolucaoAtual = destino;
+            
+            document.getElementById('modal-nome-proj').innerText = nomeProjeto;
+            document.getElementById('check-validacao').checked = false;
+            document.getElementById('texto-recado').value = "";
+            
+            document.getElementById('modalDevolucao').style.display = "flex";
+        }
+
+        function fecharModal() {
+            document.getElementById('modalDevolucao').style.display = "none";
+        }
+
+        function confirmarDevolucao() {
+            let btn = document.getElementById('btn-confirmar-devolucao');
+            btn.innerText = "Devolvendo..."; btn.disabled = true;
+            
+            let statusBase = destinoDevolucaoAtual === 'CON' ? 'Disponível no TQS CON' : 'Disponível no TQS ALV';
+            let precisaValidacao = document.getElementById('check-validacao').checked;
+            
+            let statusFinal = precisaValidacao ? statusBase + " - Aguardando Validação" : statusBase;
+
+            fetch(urlScript, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ 
+                    'action': 'devolver', 
+                    'nomeProjeto': projDevolucaoAtual,
+                    'novoStatus': statusFinal
+                })
+            }).then(() => { 
+                fecharModal();
+                window.location.reload(); 
+            });
+        }
+        // -------------------------------------
 
         function alternarCamposFicha(bloquear) {
             const campos = ['ficha-projeto', 'ficha-num', 'ficha-obra', 'ficha-datainicio', 'ficha-status', 'ficha-plataforma', 'ficha-padrao', 'ficha-link', 'ficha-obs'];
@@ -379,7 +467,7 @@
             var projeto = document.getElementById('ficha-projeto').value;
             if(!projeto.trim()) { alert("O Nome do Projeto é obrigatório!"); return; }
             var btn = document.getElementById('btn-salvar-ficha');
-            btn.innerText = "A salvar..."; btn.disabled = true;
+            btn.innerText = "Salvando..."; btn.disabled = true;
 
             fetch(urlScript, {
                 method: 'POST', mode: 'no-cors',
@@ -406,7 +494,7 @@
         function cadastrarProjeto() {
             var nome = document.getElementById('nomeProjeto').value;
             var btn = document.getElementById('btn-cadastrar');
-            btn.innerText = "A salvar..."; btn.disabled = true;
+            btn.innerText = "Salvando..."; btn.disabled = true;
             fetch(urlScript, {
                 method: 'POST', mode: 'no-cors',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -417,19 +505,6 @@
                     'fase': document.getElementById('faseProjeto').value, 
                     'versao': document.getElementById('versaoProjeto').value, 
                     'responsavel': document.getElementById('responsavelProjeto').value 
-                })
-            }).then(() => { window.location.reload(); });
-        }
-
-        function devolverProjeto(nomeProjeto, destino) {
-            if(!confirm(`Confirma a devolução de "${nomeProjeto}" para o TQS ${destino}?`)) return; 
-            fetch(urlScript, {
-                method: 'POST', mode: 'no-cors',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ 
-                    'action': 'devolver', 
-                    'nomeProjeto': nomeProjeto,
-                    'novoStatus': destino === 'CON' ? 'Disponível no TQS CON' : 'Disponível no TQS ALV'
                 })
             }).then(() => { window.location.reload(); });
         }
